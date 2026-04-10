@@ -1,0 +1,1126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Diamond Minds — Baseball IQ Training</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #050c14;
+  --ink2: #091422;
+  --ink3: #0d1d2e;
+  --ink4: #132333;
+  --gold: #f0b429;
+  --gold2: #c8900a;
+  --gold-dim: rgba(240,180,41,0.15);
+  --ice: #c8dff0;
+  --ice2: #7a9fbf;
+  --red: #e84040;
+  --green: #2ea043;
+  --white: #f4efe4;
+  --r: 10px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden}
+body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;display:flex;flex-direction:column}
+
+/* ─── SCREENS ─── */
+.screen{display:none;flex-direction:column;height:100%;overflow:hidden}
+.screen.active{display:flex}
+
+/* ─── HEADER ─── */
+.hdr{background:var(--ink2);border-bottom:1px solid rgba(240,180,41,0.12);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:.1em;color:var(--white);line-height:1}
+.logo span{color:var(--gold)}
+.badge-pill{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--gold);background:var(--gold-dim);border:1px solid rgba(240,180,41,0.25);padding:4px 12px;border-radius:20px}
+
+/* ─── SCROLLABLE CONTENT ─── */
+.content{flex:1;overflow-y:auto;padding:20px 16px;-webkit-overflow-scrolling:touch}
+
+/* ─── AUTH SCREEN ─── */
+.auth-hero{text-align:center;padding:24px 0 20px}
+.auth-icon{width:70px;height:70px;background:var(--gold-dim);border:2px solid rgba(240,180,41,0.3);border-radius:20px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:36px}
+.auth-title{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:.08em;color:var(--white);line-height:1.1;margin-bottom:6px}
+.auth-sub{font-size:13px;color:var(--ice2);line-height:1.5}
+.auth-tabs{display:flex;background:var(--ink3);border-radius:var(--r);padding:3px;margin-bottom:20px}
+.auth-tab{flex:1;padding:8px;border:none;background:none;color:var(--ice2);font-size:13px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.05em;border-radius:8px;cursor:pointer;transition:.15s}
+.auth-tab.active{background:var(--ink4);color:var(--white)}
+.field-group{margin-bottom:14px}
+.field-label{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ice2);margin-bottom:6px;display:block}
+.field-input{width:100%;background:var(--ink3);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);padding:12px 14px;color:var(--white);font-size:15px;font-family:'Barlow',sans-serif;outline:none;transition:border .15s}
+.field-input:focus{border-color:rgba(240,180,41,0.4)}
+.field-input::placeholder{color:var(--ice2);opacity:.5}
+.pos-select{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:4px}
+.pos-opt{padding:8px 4px;border-radius:8px;border:1px solid rgba(255,255,255,0.1);background:var(--ink3);color:var(--ice);font-size:12px;font-weight:600;cursor:pointer;text-align:center;transition:.15s;font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em}
+.pos-opt:hover{border-color:rgba(240,180,41,0.3)}
+.pos-opt.sel{background:var(--gold-dim);border-color:rgba(240,180,41,0.5);color:var(--gold)}
+.pin-row{display:flex;gap:8px;justify-content:center;margin-top:4px}
+.pin-box{width:52px;height:56px;background:var(--ink3);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);text-align:center;font-size:22px;font-weight:500;color:var(--white);font-family:'Bebas Neue',sans-serif;outline:none;caret-color:var(--gold)}
+.pin-box:focus{border-color:rgba(240,180,41,0.4)}
+.btn-primary{width:100%;padding:14px;background:var(--gold);border:none;border-radius:var(--r);color:var(--ink);font-size:15px;font-weight:600;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;transition:.15s;margin-top:6px}
+.btn-primary:active{opacity:.85}
+.btn-ghost{width:100%;padding:12px;background:none;border:1px solid rgba(255,255,255,0.12);border-radius:var(--r);color:var(--ice2);font-size:13px;font-family:'Barlow',sans-serif;cursor:pointer;margin-top:8px}
+.err-msg{font-size:12px;color:var(--red);text-align:center;margin-top:8px;min-height:16px}
+
+/* ─── HOME SCREEN ─── */
+.home-greeting{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em;margin-bottom:4px}
+.home-sub{font-size:13px;color:var(--ice2);margin-bottom:20px}
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:20px}
+.stat-card{background:var(--ink2);border:1px solid rgba(255,255,255,0.06);border-radius:var(--r);padding:14px 10px;text-align:center}
+.stat-num{font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--gold);line-height:1}
+.stat-lbl{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--ice2);margin-top:4px}
+.section-head{font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:600;letter-spacing:.15em;text-transform:uppercase;color:var(--ice2);margin-bottom:10px}
+.mode-grid{display:grid;gap:10px;margin-bottom:20px}
+.mode-card{background:var(--ink2);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:16px;cursor:pointer;transition:.15s;display:flex;align-items:center;gap:14px}
+.mode-card:active{opacity:.85}
+.mode-icon{width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0}
+.mode-icon.gold{background:var(--gold-dim)}
+.mode-icon.blue{background:rgba(56,135,220,0.15)}
+.mode-icon.green{background:rgba(46,160,67,0.12)}
+.mode-title{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:600;letter-spacing:.03em;color:var(--white)}
+.mode-desc{font-size:12px;color:var(--ice2);margin-top:2px;line-height:1.4}
+.pos-bar{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:4px}
+.pos-pill{padding:5px 12px;border-radius:20px;border:1px solid rgba(255,255,255,0.1);background:var(--ink3);color:var(--ice);font-size:12px;font-weight:600;cursor:pointer;font-family:'Barlow Condensed',sans-serif;transition:.15s}
+.pos-pill.active{background:var(--gold-dim);border-color:rgba(240,180,41,0.4);color:var(--gold)}
+.start-btn{width:100%;padding:16px;background:var(--gold);border:none;border-radius:var(--r);color:var(--ink);font-size:16px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;cursor:pointer;margin-top:16px}
+
+/* ─── QUIZ SCREEN ─── */
+.quiz-progress{padding:10px 16px;background:var(--ink2);border-bottom:1px solid rgba(255,255,255,0.06);flex-shrink:0}
+.prog-bar-bg{height:4px;background:var(--ink4);border-radius:2px;overflow:hidden}
+.prog-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
+.prog-meta{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--ice2);font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em}
+.quiz-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
+.situation-card{background:var(--ink2);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:14px}
+.sit-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.sit-badge{font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.05em;padding:3px 10px;border-radius:20px}
+.sit-badge.bases{background:rgba(56,135,220,0.15);color:#85b7eb}
+.sit-badge.play{background:var(--gold-dim);color:var(--gold)}
+.diamond-svg{display:block;margin:0 auto 4px}
+.you-are{text-align:center;font-size:12px;color:var(--ice2);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-top:8px}
+.you-pos{color:var(--gold);font-weight:700}
+.question{font-size:16px;font-weight:500;color:var(--white);line-height:1.5;margin-bottom:14px;padding-top:4px}
+.choices{display:flex;flex-direction:column;gap:8px}
+.choice{padding:13px 14px;background:var(--ink2);border:1px solid rgba(255,255,255,0.1);border-radius:var(--r);color:var(--white);font-size:14px;line-height:1.4;cursor:pointer;transition:.15s;text-align:left}
+.choice:active{opacity:.8}
+.choice.correct{background:rgba(46,160,67,0.15);border-color:var(--green);color:#7ee787}
+.choice.wrong{background:rgba(232,64,64,0.12);border-color:var(--red);color:#ffa0a0}
+.choice.reveal{background:rgba(46,160,67,0.08);border-color:rgba(46,160,67,0.3);color:#7ee787}
+.feedback-box{background:var(--ink3);border:1px solid rgba(255,255,255,0.08);border-radius:var(--r);padding:12px 14px;margin-top:12px;display:none}
+.feedback-box.show{display:block}
+.fb-label{font-size:10px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;margin-bottom:6px;font-family:'Barlow Condensed',sans-serif}
+.fb-label.good{color:var(--green)}
+.fb-label.bad{color:var(--red)}
+.fb-text{font-size:13px;color:var(--ice);line-height:1.5}
+.next-btn{width:100%;padding:14px;background:var(--gold);border:none;border-radius:var(--r);color:var(--ink);font-size:15px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;cursor:pointer;margin-top:12px;display:none}
+.next-btn.show{display:block}
+
+/* ─── RESULTS SCREEN ─── */
+.results-content{text-align:center;padding:20px 0}
+.results-icon{font-size:56px;margin-bottom:12px}
+.results-title{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.08em;margin-bottom:6px}
+.results-sub{font-size:14px;color:var(--ice2);margin-bottom:24px}
+.big-score{font-family:'Bebas Neue',sans-serif;font-size:80px;color:var(--gold);line-height:1;margin-bottom:4px}
+.score-label{font-size:13px;color:var(--ice2);letter-spacing:.08em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-bottom:20px}
+.results-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:24px}
+
+/* ─── PROFILE SCREEN ─── */
+.profile-avatar{width:80px;height:80px;background:var(--gold-dim);border:2px solid rgba(240,180,41,0.3);border-radius:20px;display:flex;align-items:center;justify-content:center;font-family:'Bebas Neue',sans-serif;font-size:32px;color:var(--gold);margin:0 auto 12px}
+.profile-name{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:.08em;text-align:center;margin-bottom:4px}
+.profile-pos{font-size:12px;color:var(--ice2);text-align:center;letter-spacing:.1em;text-transform:uppercase;font-family:'Barlow Condensed',sans-serif;margin-bottom:20px}
+.history-item{display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid rgba(255,255,255,0.06)}
+.history-item:last-child{border-bottom:none}
+.hi-info{font-size:13px;color:var(--ice)}
+.hi-score{font-family:'Bebas Neue',sans-serif;font-size:18px}
+.hi-score.good{color:var(--green)}
+.hi-score.bad{color:var(--red)}
+
+/* ─── BOTTOM NAV ─── */
+.bottom-nav{display:none;background:var(--ink2);border-top:1px solid rgba(255,255,255,0.08);padding:8px 0 env(safe-area-inset-bottom,8px);flex-shrink:0}
+.bottom-nav.show{display:flex}
+.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px;cursor:pointer;border:none;background:none}
+.nav-icon{font-size:20px;line-height:1}
+.nav-label{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ice2)}
+.nav-item.active .nav-label{color:var(--gold)}
+</style>
+</head>
+<body>
+
+<!-- ══ AUTH SCREEN ══ -->
+<div class="screen active" id="screen-auth">
+  <div class="hdr">
+    <div class="logo">Diamond<span>Minds</span></div>
+    <div class="badge-pill">CoachConnect Pro</div>
+  </div>
+  <div class="content">
+    <div class="auth-hero">
+      <div class="auth-icon">⚾</div>
+      <div class="auth-title">Baseball IQ<br>Training</div>
+      <div class="auth-sub">Learn every position. Know every situation.<br>Master the game before game day.</div>
+    </div>
+    <div class="auth-tabs">
+      <button class="auth-tab active" onclick="switchTab('login')">Sign In</button>
+      <button class="auth-tab" onclick="switchTab('signup')">Create Account</button>
+    </div>
+
+    <!-- LOGIN -->
+    <div id="tab-login">
+      <div class="field-group">
+        <label class="field-label">Username</label>
+        <input class="field-input" id="login-user" placeholder="Your username" autocomplete="off" autocapitalize="none">
+      </div>
+      <div class="field-group">
+        <label class="field-label">4-Digit PIN</label>
+        <div class="pin-row" id="login-pin-row">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="lp0">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="lp1">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="lp2">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="lp3">
+        </div>
+      </div>
+      <div class="err-msg" id="login-err"></div>
+      <button class="btn-primary" onclick="doLogin()">Sign In</button>
+    </div>
+
+    <!-- SIGNUP -->
+    <div id="tab-signup" style="display:none">
+      <div class="field-group">
+        <label class="field-label">Username</label>
+        <input class="field-input" id="signup-user" placeholder="Pick a cool username" autocomplete="off" autocapitalize="none">
+      </div>
+      <div class="field-group">
+        <label class="field-label">Your Position</label>
+        <div class="pos-select" id="signup-pos">
+          <div class="pos-opt" data-pos="P">P</div>
+          <div class="pos-opt" data-pos="C">C</div>
+          <div class="pos-opt" data-pos="1B">1B</div>
+          <div class="pos-opt" data-pos="2B">2B</div>
+          <div class="pos-opt" data-pos="3B">3B</div>
+          <div class="pos-opt" data-pos="SS">SS</div>
+          <div class="pos-opt" data-pos="LF">LF</div>
+          <div class="pos-opt" data-pos="CF">CF</div>
+          <div class="pos-opt" data-pos="RF">RF</div>
+        </div>
+      </div>
+      <div class="field-group">
+        <label class="field-label">Create a 4-Digit PIN</label>
+        <div class="pin-row">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="sp0">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="sp1">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="sp2">
+          <input class="pin-box" maxlength="1" inputmode="numeric" pattern="[0-9]" id="sp3">
+        </div>
+      </div>
+      <div class="err-msg" id="signup-err"></div>
+      <button class="btn-primary" onclick="doSignup()">Create Account</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ HOME SCREEN ══ -->
+<div class="screen" id="screen-home">
+  <div class="hdr">
+    <div class="logo">Diamond<span>Minds</span></div>
+    <div class="badge-pill" id="hdr-pos">SS</div>
+  </div>
+  <div class="content">
+    <div class="home-greeting" id="home-greeting">Welcome back</div>
+    <div class="home-sub" id="home-sub">Ready to level up your baseball IQ?</div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-total">0</div>
+        <div class="stat-lbl">Questions</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-pct">—</div>
+        <div class="stat-lbl">Accuracy</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-streak">0</div>
+        <div class="stat-lbl">Best Streak</div>
+      </div>
+    </div>
+
+    <div class="section-head">Training mode</div>
+    <div class="mode-grid">
+      <div class="mode-card" onclick="startMode('my-pos')">
+        <div class="mode-icon gold">🎯</div>
+        <div>
+          <div class="mode-title">My Position</div>
+          <div class="mode-desc">Questions only for your position — master your role</div>
+        </div>
+      </div>
+      <div class="mode-card" onclick="startMode('all-pos')">
+        <div class="mode-icon blue">🏟️</div>
+        <div>
+          <div class="mode-title">Full Team</div>
+          <div class="mode-desc">Random position each question — know the whole field</div>
+        </div>
+      </div>
+      <div class="mode-card" onclick="startMode('choose')">
+        <div class="mode-icon green">⚙️</div>
+        <div>
+          <div class="mode-title">Pick a Position</div>
+          <div class="mode-desc">Choose any position to drill</div>
+        </div>
+      </div>
+    </div>
+
+    <div id="choose-pos-wrap" style="display:none">
+      <div class="section-head">Choose position to drill</div>
+      <div class="pos-bar" id="choose-pos-bar">
+        <div class="pos-pill" data-pos="P">P</div>
+        <div class="pos-pill" data-pos="C">C</div>
+        <div class="pos-pill" data-pos="1B">1B</div>
+        <div class="pos-pill" data-pos="2B">2B</div>
+        <div class="pos-pill" data-pos="3B">3B</div>
+        <div class="pos-pill" data-pos="SS">SS</div>
+        <div class="pos-pill" data-pos="LF">LF</div>
+        <div class="pos-pill" data-pos="CF">CF</div>
+        <div class="pos-pill" data-pos="RF">RF</div>
+      </div>
+      <button class="start-btn" onclick="launchChosenPos()">Start Drilling</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ QUIZ SCREEN ══ -->
+<div class="screen" id="screen-quiz">
+  <div class="hdr">
+    <div class="logo">Diamond<span>Minds</span></div>
+    <button onclick="exitQuiz()" style="background:none;border:none;color:var(--ice2);font-size:13px;font-family:'Barlow',sans-serif;cursor:pointer;padding:4px">Exit</button>
+  </div>
+  <div class="quiz-progress">
+    <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-meta">
+      <span id="prog-label">0 / 10</span>
+      <span id="prog-score">0 correct</span>
+    </div>
+  </div>
+  <div class="quiz-body">
+    <div class="situation-card">
+      <div class="sit-badges">
+        <span class="sit-badge bases" id="q-bases">Bases empty</span>
+        <span class="sit-badge play" id="q-play">Fly ball to LF</span>
+      </div>
+      <svg class="diamond-svg" width="120" height="100" viewBox="0 0 120 100">
+        <polygon points="60,8 92,44 60,80 28,44" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="1.5"/>
+        <rect x="51" y="70" width="18" height="18" rx="3" fill="#091422" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <circle id="q-d1" cx="92" cy="44" r="7" fill="#091422" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <circle id="q-d2" cx="60" cy="8" r="7" fill="#091422" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <circle id="q-d3" cx="28" cy="44" r="7" fill="#091422" stroke="rgba(255,255,255,0.2)" stroke-width="1.5"/>
+        <text x="96" y="62" font-size="9" fill="rgba(200,223,240,0.5)" font-family="sans-serif">1B</text>
+        <text x="55" y="5" font-size="9" fill="rgba(200,223,240,0.5)" font-family="sans-serif">2B</text>
+        <text x="8" y="49" font-size="9" fill="rgba(200,223,240,0.5)" font-family="sans-serif">3B</text>
+      </svg>
+      <div class="you-are">You are: <span class="you-pos" id="q-pos-label">SS</span></div>
+    </div>
+    <div class="question" id="q-text">What is your job on this play?</div>
+    <div class="choices" id="q-choices"></div>
+    <div class="feedback-box" id="q-feedback">
+      <div class="fb-label" id="fb-label">Correct!</div>
+      <div class="fb-text" id="fb-text"></div>
+    </div>
+    <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
+  </div>
+</div>
+
+<!-- ══ RESULTS SCREEN ══ -->
+<div class="screen" id="screen-results">
+  <div class="hdr">
+    <div class="logo">Diamond<span>Minds</span></div>
+    <div class="badge-pill">Session Complete</div>
+  </div>
+  <div class="content">
+    <div class="results-content">
+      <div class="results-icon" id="res-icon">🏆</div>
+      <div class="results-title" id="res-title">Nice Work!</div>
+      <div class="big-score" id="res-pct">80%</div>
+      <div class="score-label">Accuracy this session</div>
+      <div class="results-stats">
+        <div class="stat-card"><div class="stat-num" id="res-correct">8</div><div class="stat-lbl">Correct</div></div>
+        <div class="stat-card"><div class="stat-num" id="res-total">10</div><div class="stat-lbl">Total</div></div>
+        <div class="stat-card"><div class="stat-num" id="res-streak">5</div><div class="stat-lbl">Best Streak</div></div>
+      </div>
+      <button class="btn-primary" onclick="goHome()" style="margin-bottom:10px">Back to Home</button>
+      <button class="btn-ghost" onclick="replayMode()">Play Again</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ PROFILE SCREEN ══ -->
+<div class="screen" id="screen-profile">
+  <div class="hdr">
+    <div class="logo">Diamond<span>Minds</span></div>
+    <div class="badge-pill">Profile</div>
+  </div>
+  <div class="content">
+    <div class="profile-avatar" id="prof-avatar">SS</div>
+    <div class="profile-name" id="prof-name">Player</div>
+    <div class="profile-pos" id="prof-pos">Shortstop</div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="prof-total">0</div><div class="stat-lbl">Questions</div></div>
+      <div class="stat-card"><div class="stat-num" id="prof-pct">—</div><div class="stat-lbl">Accuracy</div></div>
+      <div class="stat-card"><div class="stat-num" id="prof-streak">0</div><div class="stat-lbl">Best Streak</div></div>
+    </div>
+    <div class="section-head">Recent sessions</div>
+    <div id="prof-history"></div>
+    <button class="btn-ghost" onclick="doLogout()" style="margin-top:20px">Sign Out</button>
+  </div>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<div class="bottom-nav" id="bottom-nav">
+  <button class="nav-item active" id="nav-home" onclick="showTab('home')">
+    <div class="nav-icon">🏠</div>
+    <div class="nav-label">Home</div>
+  </button>
+  <button class="nav-item" id="nav-profile" onclick="showTab('profile')">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">Profile</div>
+  </button>
+</div>
+
+<script>
+var QB=[[1,"Fly ball","LF","Bases empty",[],"P","Move into back up position between mound and 2B.","Back up 3B.","Cover 2B.","Follow runner to 1B to back up for over throw."],
+[2,"Fly ball","LF","Bases empty",[],"C","Follow runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into back up position between mound and 2B."],
+[3,"Fly ball","LF","Bases empty",[],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between mound and 2B."],
+[4,"Fly ball","LF","Bases empty",[],"2B","Move into position to cover 2B, receive throw.","Cover 3B.","Back up home plate.","Move into back up position between mound and 2B."],
+[5,"Fly ball","LF","Bases empty",[],"SS","Line up relay throw from LF.","Cover 1B.","Back up home plate.","Move into back up position between mound and 2B."],
+[6,"Fly ball","LF","Bases empty",[],"3B","Stay close to 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between mound and 2B."],
+[7,"Fly ball","LF","Bases empty",[],"LF","Make a good hard throw to 2B, or hit cut-off if too far.","Back up 3B.","Throw to 3B.","Move into back up position between mound and 2B."],
+[8,"Fly ball","LF","Bases empty",[],"CF","Back up LF.","Back up 3B.","Throw to 3B.","Move into back up position between mound and 2B."],
+[9,"Fly ball","LF","Bases empty",[],"RF","Back up position toward infield.","Back up 3B.","Throw to 3rd.","Move into back up position between mound and 2B."],
+[10,"Fly ball","CF","Bases empty",[],"P","Move into back up position between mound and 2B.","Back up 3B.","Cover 2B.","Follow runner to 1B to back up for over throw."],
+[11,"Fly ball","CF","Bases empty",[],"C","Follow runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into back up position between mound and 2B."],
+[12,"Fly ball","CF","Bases empty",[],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between mound and 2B."],
+[13,"Fly ball","CF","Bases empty",[],"2B","If ball is hit to SS side of 2B, cover the bag. Otherwise you are cut off.","Cover 3B.","Back up home plate.","Move into back up position between mound and 2B."],
+[14,"Fly ball","CF","Bases empty",[],"SS","If ball is hit to 2B side of 2B, cover the bag. Otherwise you are cut off.","Cover 1B.","Back up home plate.","Move into back up position between mound and 2B."],
+[15,"Fly ball","CF","Bases empty",[],"3B","Stay close to 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between mound and 2B."],
+[16,"Fly ball","CF","Bases empty",[],"LF","Back up CF.","Back up 3B.","Throw to 3B.","Move into back up position between mound and 2B."],
+[17,"Fly ball","CF","Bases empty",[],"CF","Throw to 2B or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between mound and 2B."],
+[18,"Fly ball","CF","Bases empty",[],"RF","Back up CF.","Back up 3B.","Throw to 3rd.","Move into back up position between mound and 2B."],
+[19,"Fly ball","RF","Bases empty",[],"P","Move into back up position between mound and SS position.","Back up 3B.","Cover 2B.","Follow runner to 1B to back up for over throw."],
+[20,"Fly ball","RF","Bases empty",[],"C","Follow runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into back up position between mound and SS position."],
+[21,"Fly ball","RF","Bases empty",[],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between mound and SS position."],
+[22,"Fly ball","RF","Bases empty",[],"2B","You are the cut off.","Cover 3B.","Back up home plate.","Move into back up position between mound and SS position."],
+[23,"Fly ball","RF","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into back up position between mound and SS position."],
+[24,"Fly ball","RF","Bases empty",[],"3B","Stay close to 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between mound and SS position."],
+[25,"Fly ball","RF","Bases empty",[],"LF","Move into backup position behind SS position.","Back up 3B.","Throw to 3B.","Move into back up position between mound and SS position."],
+[26,"Fly ball","RF","Bases empty",[],"CF","Back up RF.","Back up 3B.","Throw to 3B.","Move into back up position between mound and SS position."],
+[27,"Fly ball","RF","Bases empty",[],"RF","Throw to 2B or cut off.","Back up 3B.","Throw to 3rd.","Move into back up position between mound and SS position."],
+[28,"Fly ball","LF","Runner on 1st",["1st"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate."],
+[29,"Fly ball","LF","Runner on 1st",["1st"],"C","Protect home plate.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[30,"Fly ball","LF","Runner on 1st",["1st"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[31,"Fly ball","LF","Runner on 1st",["1st"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[32,"Fly ball","LF","Runner on 1st",["1st"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[33,"Fly ball","LF","Runner on 1st",["1st"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[34,"Fly ball","LF","Runner on 1st",["1st"],"LF","Make throw to 3B or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[35,"Fly ball","LF","Runner on 1st",["1st"],"CF","Back up LF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[36,"Fly ball","LF","Runner on 1st",["1st"],"RF","Move into back up position behind 2B position.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[37,"Fly ball","CF","Runner on 1st",["1st"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate."],
+[38,"Fly ball","CF","Runner on 1st",["1st"],"C","Protect home plate.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[39,"Fly ball","CF","Runner on 1st",["1st"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[40,"Fly ball","CF","Runner on 1st",["1st"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[41,"Fly ball","CF","Runner on 1st",["1st"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[42,"Fly ball","CF","Runner on 1st",["1st"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[43,"Fly ball","CF","Runner on 1st",["1st"],"LF","Back up CF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[44,"Fly ball","CF","Runner on 1st",["1st"],"CF","Make throw to 3B or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[45,"Fly ball","CF","Runner on 1st",["1st"],"RF","Back up CF.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[46,"Fly ball","RF","Runner on 1st",["1st"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate."],
+[47,"Fly ball","RF","Runner on 1st",["1st"],"C","Protect home plate.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[48,"Fly ball","RF","Runner on 1st",["1st"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[49,"Fly ball","RF","Runner on 1st",["1st"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[50,"Fly ball","RF","Runner on 1st",["1st"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[51,"Fly ball","RF","Runner on 1st",["1st"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[52,"Fly ball","RF","Runner on 1st",["1st"],"LF","Back up 3B.","Throw to 3B.","Back up 1B.","Move into back up position between 3B and Home plate."],
+[53,"Fly ball","RF","Runner on 1st",["1st"],"CF","Back up RF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[54,"Fly ball","RF","Runner on 1st",["1st"],"RF","Make throw to 3B or cut off.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[55,"Fly ball","LF","Runner on 2nd",["2nd"],"P","Move into back up position between 1B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[56,"Fly ball","LF","Runner on 2nd",["2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position between 1B and Home plate."],
+[57,"Fly ball","LF","Runner on 2nd",["2nd"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 1B and Home plate."],
+[58,"Fly ball","LF","Runner on 2nd",["2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 1B and Home plate."],
+[59,"Fly ball","LF","Runner on 2nd",["2nd"],"SS","Cover 3B bag.","Cover 1B.","Back up home plate.","Move into back up position between 1B and Home plate."],
+[60,"Fly ball","LF","Runner on 2nd",["2nd"],"3B","You are the cut off for a throw home.","Throw to 2B.","Cover home plate.","Move into back up position between 1B and Home plate."],
+[61,"Fly ball","LF","Runner on 2nd",["2nd"],"LF","Make throw to home or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between 1B and Home plate."],
+[62,"Fly ball","LF","Runner on 2nd",["2nd"],"CF","Back up LF.","Back up 3B.","Throw to 3B.","Move into back up position between 1B and Home plate."],
+[63,"Fly ball","LF","Runner on 2nd",["2nd"],"RF","Move towards infield for possible back up.","Back up 3B.","Throw to 3rd.","Move into back up position between 1B and Home plate."],
+[64,"Fly ball","CF","Runner on 2nd",["2nd"],"P","Move into back up position behind Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[65,"Fly ball","CF","Runner on 2nd",["2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position behind Home plate."],
+[66,"Fly ball","CF","Runner on 2nd",["2nd"],"1B","You are the cut off for a throw home.","Throw to 3B.","Cover 2B.","Move into back up position behind Home plate."],
+[67,"Fly ball","CF","Runner on 2nd",["2nd"],"2B","Cover 1B.","Cover 3B.","Back up home plate.","Move into back up position behind Home plate."],
+[68,"Fly ball","CF","Runner on 2nd",["2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into back up position behind Home plate."],
+[69,"Fly ball","CF","Runner on 2nd",["2nd"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position behind Home plate."],
+[70,"Fly ball","CF","Runner on 2nd",["2nd"],"LF","Back up CF.","Back up 3B.","Throw to 3B.","Move into back up position behind Home plate."],
+[71,"Fly ball","CF","Runner on 2nd",["2nd"],"CF","Make throw to home or cut off.","Back up 3B.","Throw to 3B.","Move into back up position behind Home plate."],
+[72,"Fly ball","CF","Runner on 2nd",["2nd"],"RF","Back up CF.","Back up 3B.","Throw to 3rd.","Move into back up position behind Home plate."],
+[73,"Fly ball","RF","Runner on 2nd",["2nd"],"P","Move into back up position behind Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[74,"Fly ball","RF","Runner on 2nd",["2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position behind Home plate."],
+[75,"Fly ball","RF","Runner on 2nd",["2nd"],"1B","You are the cut off for a throw home.","Throw to 3B.","Cover 2B.","Move into back up position behind Home plate."],
+[76,"Fly ball","RF","Runner on 2nd",["2nd"],"2B","Cover 1B.","Cover 3B.","Back up home plate.","Move into back up position behind Home plate."],
+[77,"Fly ball","RF","Runner on 2nd",["2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into back up position behind Home plate."],
+[78,"Fly ball","RF","Runner on 2nd",["2nd"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position behind Home plate."],
+[79,"Fly ball","RF","Runner on 2nd",["2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move into back up position behind Home plate."],
+[80,"Fly ball","RF","Runner on 2nd",["2nd"],"CF","Back up RF.","Back up 3B.","Throw to 3B.","Move into back up position behind Home plate."],
+[81,"Fly ball","RF","Runner on 2nd",["2nd"],"RF","Make throw to home or cut off.","Back up 3B.","Throw to 3rd.","Move into back up position behind Home plate."],
+[82,"Grounder","3B","Bases empty",[],"P","Move into position to cover Home plate.","Back up 3B.","Cover 2B.","Follow the runner to 1B to back up for over throw."],
+[83,"Grounder","3B","Bases empty",[],"C","Follow the runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into position to cover Home plate."],
+[84,"Grounder","3B","Bases empty",[],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to cover Home plate."],
+[85,"Grounder","3B","Bases empty",[],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into position to cover Home plate."],
+[86,"Grounder","3B","Bases empty",[],"SS","Back up 3B.","Cover 1B.","Back up home plate.","Move into position to cover Home plate."],
+[87,"Grounder","3B","Bases empty",[],"3B","Field ball and throw to 1B.","Throw to 2B.","Cover home plate.","Move into position to cover Home plate."],
+[88,"Grounder","3B","Bases empty",[],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move into position to cover Home plate."],
+[89,"Grounder","3B","Bases empty",[],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover Home plate."],
+[90,"Grounder","3B","Bases empty",[],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Move into position to cover Home plate."],
+[91,"Grounder","SS","Bases empty",[],"P","Move into position to cover 3B.","Back up 3B.","Cover 2B.","Follow the runner to 1B to back up for over throw."],
+[92,"Grounder","SS","Bases empty",[],"C","Follow the runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[93,"Grounder","SS","Bases empty",[],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to cover 3B."],
+[94,"Grounder","SS","Bases empty",[],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into position to cover 3B."],
+[95,"Grounder","SS","Bases empty",[],"SS","Field ball and throw to 1B.","Cover 1B.","Back up home plate.","Move into position to cover 3B."],
+[96,"Grounder","SS","Bases empty",[],"3B","Back up SS.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[97,"Grounder","SS","Bases empty",[],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[98,"Grounder","SS","Bases empty",[],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[99,"Grounder","SS","Bases empty",[],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Move into position to cover 3B."],
+[100,"Grounder","2B","Bases empty",[],"P","Move into position to cover Home Plate.","Back up 3B.","Cover 2B.","Follow the runner to 1B to back up for over throw."],
+[101,"Grounder","2B","Bases empty",[],"C","Follow the runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into position to cover Home Plate."],
+[102,"Grounder","2B","Bases empty",[],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to cover Home Plate."],
+[103,"Grounder","2B","Bases empty",[],"2B","Field ball and throw to 1B.","Cover 3B.","Back up home plate.","Move into position to cover Home Plate."],
+[104,"Grounder","2B","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to cover Home Plate."],
+[105,"Grounder","2B","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to cover Home Plate."],
+[106,"Grounder","2B","Bases empty",[],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Move into position to cover Home Plate."],
+[107,"Grounder","2B","Bases empty",[],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover Home Plate."],
+[108,"Grounder","2B","Bases empty",[],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to cover Home Plate."],
+[109,"Grounder","1B","Bases empty",[],"P","Move into position to cover 1B.","Back up 3B.","Cover 2B.","Follow the runner to 1B to back up for over throw."],
+[110,"Grounder","1B","Bases empty",[],"C","Follow the runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[111,"Grounder","1B","Bases empty",[],"1B","Field ball and run/throw to 1B.","Throw to 3B.","Cover 2B.","Move into position to cover 1B."],
+[112,"Grounder","1B","Bases empty",[],"2B","Back up 1B.","Cover 3B.","Back up home plate.","Move into position to cover 1B."],
+[113,"Grounder","1B","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to cover 1B."],
+[114,"Grounder","1B","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[115,"Grounder","1B","Bases empty",[],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[116,"Grounder","1B","Bases empty",[],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[117,"Grounder","1B","Bases empty",[],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Move into position to cover 1B."],
+[118,"Grounder","P","Bases empty",[],"P","Field ball and throw to 1B.","Back up 3B.","Cover 2B.","Follow the runner to 1B to back up for over throw."],
+[119,"Grounder","P","Bases empty",[],"C","Follow the runner to 1B to back up for over throw.","Throw to 2B.","Cover home plate.","Field ball and throw to 1B."],
+[120,"Grounder","P","Bases empty",[],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Field ball and throw to 1B."],
+[121,"Grounder","P","Bases empty",[],"2B","Back up P.","Cover 3B.","Back up home plate.","Field ball and throw to 1B."],
+[122,"Grounder","P","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Field ball and throw to 1B."],
+[123,"Grounder","P","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Field ball and throw to 1B."],
+[124,"Grounder","P","Bases empty",[],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Field ball and throw to 1B."],
+[125,"Grounder","P","Bases empty",[],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Field ball and throw to 1B."],
+[126,"Grounder","P","Bases empty",[],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Field ball and throw to 1B."],
+[127,"Grounder","3B","Runner on 1st",["1st"],"P","Move into position to cover 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[128,"Grounder","3B","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[129,"Grounder","3B","Runner on 1st",["1st"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to cover 3B."],
+[130,"Grounder","3B","Runner on 1st",["1st"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into position to cover 3B."],
+[131,"Grounder","3B","Runner on 1st",["1st"],"SS","Back up 3B.","Cover 1B.","Back up home plate.","Move into position to cover 3B."],
+[132,"Grounder","3B","Runner on 1st",["1st"],"3B","Field ball and throw to 2B.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[133,"Grounder","3B","Runner on 1st",["1st"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[134,"Grounder","3B","Runner on 1st",["1st"],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[135,"Grounder","3B","Runner on 1st",["1st"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to cover 3B."],
+[136,"Grounder","SS","Runner on 1st",["1st"],"P","Move into position to cover 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[137,"Grounder","SS","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[138,"Grounder","SS","Runner on 1st",["1st"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to cover 3B."],
+[139,"Grounder","SS","Runner on 1st",["1st"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into position to cover 3B."],
+[140,"Grounder","SS","Runner on 1st",["1st"],"SS","Field ball and throw to 2B.","Cover 1B.","Back up home plate.","Move into position to cover 3B."],
+[141,"Grounder","SS","Runner on 1st",["1st"],"3B","Back up SS.","Throw to 2B.","Cover home plate.","Move into position to cover 3B."],
+[142,"Grounder","SS","Runner on 1st",["1st"],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[143,"Grounder","SS","Runner on 1st",["1st"],"CF","Move into back up position behind 2B.","Back up 3B.","Throw to 3B.","Move into position to cover 3B."],
+[144,"Grounder","SS","Runner on 1st",["1st"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to cover 3B."],
+[145,"Grounder","2B","Runner on 1st",["1st"],"P","Move into position to back up 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[146,"Grounder","2B","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to back up 1B."],
+[147,"Grounder","2B","Runner on 1st",["1st"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to back up 1B."],
+[148,"Grounder","2B","Runner on 1st",["1st"],"2B","Field ball and throw to 2B.","Cover 3B.","Back up home plate.","Move into position to back up 1B."],
+[149,"Grounder","2B","Runner on 1st",["1st"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to back up 1B."],
+[150,"Grounder","2B","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to back up 1B."],
+[151,"Grounder","2B","Runner on 1st",["1st"],"LF","Move into back up position behind SS for over throw.","Back up 3B.","Throw to 3B.","Move into position to back up 1B."],
+[152,"Grounder","2B","Runner on 1st",["1st"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move into position to back up 1B."],
+[153,"Grounder","2B","Runner on 1st",["1st"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to back up 1B."],
+[154,"Grounder","1B","Runner on 1st",["1st"],"P","Move into position to cover 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[155,"Grounder","1B","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[156,"Grounder","1B","Runner on 1st",["1st"],"1B","If the play takes you towards 2nd base, field ball and throw to 2B. Otherwise, step on 1B.","Throw to 3B.","Cover 2B.","Move into position to cover 1B."],
+[157,"Grounder","1B","Runner on 1st",["1st"],"2B","Back up 1B.","Cover 3B.","Back up home plate.","Move into position to cover 1B."],
+[158,"Grounder","1B","Runner on 1st",["1st"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to cover 1B."],
+[159,"Grounder","1B","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[160,"Grounder","1B","Runner on 1st",["1st"],"LF","Move into back up position behind SS for over throw.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[161,"Grounder","1B","Runner on 1st",["1st"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[162,"Grounder","1B","Runner on 1st",["1st"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Move into position to cover 1B."],
+[163,"Grounder","P","Runner on 1st",["1st"],"P","Field ball and throw to 2B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[164,"Grounder","P","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Field ball and throw to 2B."],
+[165,"Grounder","P","Runner on 1st",["1st"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Field ball and throw to 2B."],
+[166,"Grounder","P","Runner on 1st",["1st"],"2B","Back up P.","Cover 3B.","Back up home plate.","Field ball and throw to 2B."],
+[167,"Grounder","P","Runner on 1st",["1st"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Field ball and throw to 2B."],
+[168,"Grounder","P","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Field ball and throw to 2B."],
+[169,"Grounder","P","Runner on 1st",["1st"],"LF","Move into back up position behind 3B for over throw.","Back up 3B.","Throw to 3B.","Field ball and throw to 2B."],
+[170,"Grounder","P","Runner on 1st",["1st"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Field ball and throw to 2B."],
+[171,"Grounder","P","Runner on 1st",["1st"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Field ball and throw to 2B."],
+[172,"Grounder","3B","Runner on 2nd",["2nd"],"P","Cover 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[173,"Grounder","3B","Runner on 2nd",["2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Cover 3B."],
+[174,"Grounder","3B","Runner on 2nd",["2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Cover 3B."],
+[175,"Grounder","3B","Runner on 2nd",["2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Throw to home."],
+[176,"Grounder","3B","Runner on 2nd",["2nd"],"SS","Back up 3B.","Cover 1B.","Back up home plate.","Cover 3B."],
+[177,"Grounder","3B","Runner on 2nd",["2nd"],"3B","Hold the runner with your eyes and throw to 1B.","Throw to 2B.","Cover home plate.","Cover 3B."],
+[178,"Grounder","3B","Runner on 2nd",["2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Cover 3B."],
+[179,"Grounder","3B","Runner on 2nd",["2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Cover 3B."],
+[180,"Grounder","3B","Runner on 2nd",["2nd"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Cover 3B."],
+[181,"Grounder","SS","Runner on 2nd",["2nd"],"P","Cover 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[182,"Grounder","SS","Runner on 2nd",["2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Cover 3B."],
+[183,"Grounder","SS","Runner on 2nd",["2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Cover 3B."],
+[184,"Grounder","SS","Runner on 2nd",["2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Throw to home."],
+[185,"Grounder","SS","Runner on 2nd",["2nd"],"SS","Hold the runner with your eyes and throw to 1B.","Cover 1B.","Back up home plate.","Cover 3B."],
+[186,"Grounder","SS","Runner on 2nd",["2nd"],"3B","Back up SS.","Throw to 2B.","Cover home plate.","Cover 3B."],
+[187,"Grounder","SS","Runner on 2nd",["2nd"],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Cover 3B."],
+[188,"Grounder","SS","Runner on 2nd",["2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Cover 3B."],
+[189,"Grounder","SS","Runner on 2nd",["2nd"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Cover 3B."],
+[190,"Grounder","2B","Runner on 2nd",["2nd"],"P","Move to a back up position between Home Plate and 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[191,"Grounder","2B","Runner on 2nd",["2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move to a back up position between Home Plate and 1B."],
+[192,"Grounder","2B","Runner on 2nd",["2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move to a back up position between Home Plate and 1B."],
+[193,"Grounder","2B","Runner on 2nd",["2nd"],"2B","Hold the runner with your eyes and throw to 1B.","Cover 3B.","Back up home plate.","Move to a back up position between Home Plate and 1B."],
+[194,"Grounder","2B","Runner on 2nd",["2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move to a back up position between Home Plate and 1B."],
+[195,"Grounder","2B","Runner on 2nd",["2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move to a back up position between Home Plate and 1B."],
+[196,"Grounder","2B","Runner on 2nd",["2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move to a back up position between Home Plate and 1B."],
+[197,"Grounder","2B","Runner on 2nd",["2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move to a back up position between Home Plate and 1B."],
+[198,"Grounder","2B","Runner on 2nd",["2nd"],"RF","Back up 2B.","Back up 3B.","Throw to 3rd.","Move to a back up position between Home Plate and 1B."],
+[199,"Grounder","1B","Runner on 2nd",["2nd"],"P","Cover/back up 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[200,"Grounder","1B","Runner on 2nd",["2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Cover/back up 1B."],
+[201,"Grounder","1B","Runner on 2nd",["2nd"],"1B","Field the ball and run/throw to 1B. Then check the runner at 3B.","Throw to 3B.","Cover 2B.","Cover/back up 1B."],
+[202,"Grounder","1B","Runner on 2nd",["2nd"],"2B","Back up 1B.","Cover 3B.","Back up home plate.","Cover/back up 1B."],
+[203,"Grounder","1B","Runner on 2nd",["2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Cover/back up 1B."],
+[204,"Grounder","1B","Runner on 2nd",["2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Cover/back up 1B."],
+[205,"Grounder","1B","Runner on 2nd",["2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Cover/back up 1B."],
+[206,"Grounder","1B","Runner on 2nd",["2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Cover/back up 1B."],
+[207,"Grounder","1B","Runner on 2nd",["2nd"],"RF","Back up 1B.","Back up 3B.","Throw to 3rd.","Cover/back up 1B."],
+[208,"Grounder","P","Runner on 2nd",["2nd"],"P","Hold the runner with your eyes and throw to 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[209,"Grounder","P","Runner on 2nd",["2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Hold the runner with your eyes and throw to 1B."],
+[210,"Grounder","P","Runner on 2nd",["2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Hold the runner with your eyes and throw to 1B."],
+[211,"Grounder","P","Runner on 2nd",["2nd"],"2B","Back up P.","Cover 3B.","Back up home plate.","Hold the runner with your eyes and throw to 1B."],
+[212,"Grounder","P","Runner on 2nd",["2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Hold the runner with your eyes and throw to 1B."],
+[213,"Grounder","P","Runner on 2nd",["2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Hold the runner with your eyes and throw to 1B."],
+[214,"Grounder","P","Runner on 2nd",["2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Hold the runner with your eyes and throw to 1B."],
+[215,"Grounder","P","Runner on 2nd",["2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Hold the runner with your eyes and throw to 1B."],
+[216,"Grounder","P","Runner on 2nd",["2nd"],"RF","Move into back up position behind 1B for over throw.","Back up 3B.","Throw to 3rd.","Hold the runner with your eyes and throw to 1B."],
+[217,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"P","Cover/back up 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[218,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Cover/back up 3B."],
+[219,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Cover/back up 3B."],
+[220,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Cover/back up 3B."],
+[221,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"SS","Back up 3B.","Cover 1B.","Back up home plate.","Cover/back up 3B."],
+[222,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"3B","Field ball and tag runner/3B.","Throw to 2B.","Cover home plate.","Cover/back up 3B."],
+[223,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Cover/back up 3B."],
+[224,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Cover/back up 3B."],
+[225,"Grounder","3B","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Cover/back up 3B."],
+[226,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into position to back up 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[227,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to back up 3B."],
+[228,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to back up 3B."],
+[229,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into position to back up 3B."],
+[230,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"SS","Field ball and throw to 2B or 3B depending on your momentum.","Cover 1B.","Back up home plate.","Move into position to back up 3B."],
+[231,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to back up 3B."],
+[232,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"LF","Move into back up position behind SS.","Back up 3B.","Throw to 3B.","Move into position to back up 3B."],
+[233,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move into position to back up 3B."],
+[234,"Grounder","SS","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to back up 3B."],
+[235,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into position to back up 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[236,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to back up 3B."],
+[237,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Move into position to back up 3B."],
+[238,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"2B","With less than 2 outs, field ball and throw to 2B for double play. With 2 outs throw to 1B.","Cover 3B.","Back up home plate.","Move into position to back up 3B."],
+[239,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to back up 3B."],
+[240,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to back up 3B."],
+[241,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move into position to back up 3B."],
+[242,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move into position to back up 3B."],
+[243,"Grounder","2B","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move into back up position behind 2B.","Back up 3B.","Throw to 3rd.","Move into position to back up 3B."],
+[244,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into position to cover 1B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[245,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[246,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"1B","Field ball and run/throw to 1B. Watch runner at 3B.","Throw to 3B.","Cover 2B.","Move into position to cover 1B."],
+[247,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"2B","Back up 1B.","Cover 3B.","Back up home plate.","Move into position to cover 1B."],
+[248,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Move into position to cover 1B."],
+[249,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Move into position to cover 1B."],
+[250,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[251,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Move into position to cover 1B."],
+[252,"Grounder","1B","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Move into position to cover 1B."],
+[253,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"P","Field ball and throw to 3B.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[254,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Field ball and throw to 3B."],
+[255,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Field ball and throw to 3B."],
+[256,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"2B","Back up P.","Cover 3B.","Back up home plate.","Field ball and throw to 3B."],
+[257,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Field ball and throw to 3B."],
+[258,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Field ball and throw to 3B."],
+[259,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Field ball and throw to 3B."],
+[260,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"CF","Move into back up position behind 2B for over throw.","Back up 3B.","Throw to 3B.","Field ball and throw to 3B."],
+[261,"Grounder","P","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move into back up position behind 1B.","Back up 3B.","Throw to 3rd.","Field ball and throw to 3B."],
+[262,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[263,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[264,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[265,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[266,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[267,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[268,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"LF","Make throw to home or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[269,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"CF","Back up LF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[270,"Fly ball","LF","Runners on 1st & 2nd",["1st", "2nd"],"RF","Move towards infield for possible back up.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[271,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[272,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[273,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[274,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[275,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[276,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[277,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"LF","Back up CF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[278,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"CF","Make throw to home or cut off.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[279,"Fly ball","CF","Runners on 1st & 2nd",["1st", "2nd"],"RF","Back up CF.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[280,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"P","Move into back up position between 3B and Home plate.","Back up 3B.","Cover 2B.","Protect home plate. Be ready for throw."],
+[281,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"C","Protect home plate. Be ready for throw.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[282,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"1B","After seeing the runner touch 1B, cover the bag.","Throw to 3B.","Cover 2B.","Move into back up position between 3B and Home plate."],
+[283,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[284,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"SS","You are the cut off.","Cover 1B.","Back up home plate.","Move into back up position between 3B and Home plate."],
+[285,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"3B","Cover 3B bag.","Throw to 2B.","Cover home plate.","Move into back up position between 3B and Home plate."],
+[286,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"LF","Back up 3B.","Throw to 3B.","Back up 1B.","Move into back up position between 3B and Home plate."],
+[287,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"CF","Back up RF.","Back up 3B.","Throw to 3B.","Move into back up position between 3B and Home plate."],
+[288,"Fly ball","RF","Runners on 1st & 2nd",["1st", "2nd"],"RF","Make throw to home or cut off.","Back up 3B.","Throw to 3rd.","Move into back up position between 3B and Home plate."],
+[289,"Double","RF","Bases empty",[],"P","Back up home plate.","Back up 3B.","Cover 2B.","Protect home plate."],
+[290,"Double","RF","Bases empty",[],"C","Protect home plate.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[291,"Double","RF","Bases empty",[],"1B","Trail 30 feet behind second baseman.","Throw to 3B.","Cover 2B.","Back up home plate."],
+[292,"Double","RF","Bases empty",[],"2B","Main cutoff in double cut lining up to 3B.","Cover 3B.","Back up home plate.","Throw to home."],
+[293,"Double","RF","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Charge the mound."],
+[294,"Double","RF","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[295,"Double","RF","Bases empty",[],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[296,"Double","RF","Bases empty",[],"CF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[297,"Double","RF","Bases empty",[],"RF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3rd.","Back up home plate."],
+[298,"Double","Right Center","Bases empty",[],"P","Back up third base.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[299,"Double","Right Center","Bases empty",[],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up third base."],
+[300,"Double","Right Center","Bases empty",[],"1B","Cover 2B.","Throw to 3B.","Back up the pitcher.","Back up third base."],
+[301,"Double","Right Center","Bases empty",[],"2B","Main cutoff in double cut lining up to 3B.","Cover 3B.","Back up home plate.","Back up third base."],
+[302,"Double","Right Center","Bases empty",[],"SS","Trail 30 feet behind second baseman.","Cover 1B.","Back up home plate.","Back up third base."],
+[303,"Double","Right Center","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up third base."],
+[304,"Double","Right Center","Bases empty",[],"LF","Move into back up position behind 3B.","Back up 3B.","Throw to 3B.","Back up third base."],
+[305,"Double","Right Center","Bases empty",[],"CF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up third base."],
+[306,"Double","Right Center","Bases empty",[],"RF","Move towards the ball.","Back up 3B.","Throw to 3rd.","Back up third base."],
+[307,"Double","Left Center","Bases empty",[],"P","Back up third base.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[308,"Double","Left Center","Bases empty",[],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up third base."],
+[309,"Double","Left Center","Bases empty",[],"1B","Cover 2B.","Throw to 3B.","Back up the pitcher.","Back up third base."],
+[310,"Double","Left Center","Bases empty",[],"2B","Trail 30 feet behind short stop.","Cover 3B.","Back up home plate.","Back up third base."],
+[311,"Double","Left Center","Bases empty",[],"SS","Main cutoff in double cut lining up to 3B.","Cover 1B.","Back up home plate.","Back up third base."],
+[312,"Double","Left Center","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up third base."],
+[313,"Double","Left Center","Bases empty",[],"LF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up third base."],
+[314,"Double","Left Center","Bases empty",[],"CF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up third base."],
+[315,"Double","Left Center","Bases empty",[],"RF","Move into a back up position between first and second base.","Back up 3B.","Throw to 3rd.","Back up third base."],
+[316,"Double","LF","Bases empty",[],"P","Back up third base on the home plate side.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[317,"Double","LF","Bases empty",[],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up third base on the home plate side."],
+[318,"Double","LF","Bases empty",[],"1B","Cover 2B.","Throw to 3B.","Back up the pitcher.","Back up third base on the home plate side."],
+[319,"Double","LF","Bases empty",[],"2B","Trail 30 feet behind short stop.","Cover 3B.","Back up home plate.","Back up third base on the home plate side."],
+[320,"Double","LF","Bases empty",[],"SS","Main cutoff in double cut lining up to 3B.","Cover 1B.","Back up home plate.","Back up third base on the home plate side."],
+[321,"Double","LF","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up third base on the home plate side."],
+[322,"Double","LF","Bases empty",[],"LF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up third base on the home plate side."],
+[323,"Double","LF","Bases empty",[],"CF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up third base on the home plate side."],
+[324,"Double","LF","Bases empty",[],"RF","Move into a back up position behind second base.","Back up 3B.","Throw to 3rd.","Back up third base on the home plate side."],
+[325,"Double","RF","Runner on 1st",["1st"],"P","Back up home plate.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[326,"Double","RF","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[327,"Double","RF","Runner on 1st",["1st"],"1B","Trail 30 feet behind second baseman.","Throw to 3B.","Cover 2B.","Back up home plate."],
+[328,"Double","RF","Runner on 1st",["1st"],"2B","Main cutoff in double cut lining up to home.","Cover 3B.","Back up home plate.","Throw to home."],
+[329,"Double","RF","Runner on 1st",["1st"],"SS","Move behind pitchers mound in case of possible play at 2B.","Cover 1B.","Back up home plate.","Charge the mound."],
+[330,"Double","RF","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[331,"Double","RF","Runner on 1st",["1st"],"LF","Move in to dirt behind SS.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[332,"Double","RF","Runner on 1st",["1st"],"CF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[333,"Double","RF","Runner on 1st",["1st"],"RF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3rd.","Back up home plate."],
+[334,"Double","Right Center","Runner on 1st",["1st"],"P","Back up home plate.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[335,"Double","Right Center","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[336,"Double","Right Center","Runner on 1st",["1st"],"1B","Move in to the right of the pitchers mound to be the second cut if necessary.","Throw to 3B.","Cover 2B.","Back up home plate."],
+[337,"Double","Right Center","Runner on 1st",["1st"],"2B","Main cutoff in double cut lining up to home.","Cover 3B.","Back up home plate.","Throw to home."],
+[338,"Double","Right Center","Runner on 1st",["1st"],"SS","Trail 30 feet behind second baseman.","Cover 1B.","Back up home plate.","Charge the mound."],
+[339,"Double","Right Center","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[340,"Double","Right Center","Runner on 1st",["1st"],"LF","Move in to dirt behind SS.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[341,"Double","Right Center","Runner on 1st",["1st"],"CF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[342,"Double","Right Center","Runner on 1st",["1st"],"RF","Move towards the ball.","Back up 3B.","Throw to 3rd.","Back up home plate."],
+[343,"Double","Left Center","Runner on 1st",["1st"],"P","Back up home plate.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[344,"Double","Left Center","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[345,"Double","Left Center","Runner on 1st",["1st"],"1B","Move in to the left of the pitchers mound to be the second cut if necessary.","Throw to 3B.","Cover 2B.","Back up home plate."],
+[346,"Double","Left Center","Runner on 1st",["1st"],"2B","Trail 30 feet behind short stop.","Cover 3B.","Back up home plate.","Throw to home."],
+[347,"Double","Left Center","Runner on 1st",["1st"],"SS","Main cutoff in double cut lining up to home.","Cover 1B.","Back up home plate.","Charge the mound."],
+[348,"Double","Left Center","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[349,"Double","Left Center","Runner on 1st",["1st"],"LF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[350,"Double","Left Center","Runner on 1st",["1st"],"CF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[351,"Double","Left Center","Runner on 1st",["1st"],"RF","Move in to dirt behind 2B.","Back up 3B.","Throw to 3rd.","Back up home plate."],
+[352,"Double","LF","Runner on 1st",["1st"],"P","Back up home plate.","Back up 3B.","Cover 2B.","Protect Home Plate."],
+[353,"Double","LF","Runner on 1st",["1st"],"C","Protect Home Plate.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[354,"Double","LF","Runner on 1st",["1st"],"1B","Move in to the left of the pitchers mound to be the second cut if necessary.","Throw to 3B.","Cover 2B.","Back up home plate."],
+[355,"Double","LF","Runner on 1st",["1st"],"2B","Trail 30 feet behind short stop.","Cover 3B.","Back up home plate.","Throw to home."],
+[356,"Double","LF","Runner on 1st",["1st"],"SS","Main cutoff in double cut lining up to home.","Cover 1B.","Back up home plate.","Charge the mound."],
+[357,"Double","LF","Runner on 1st",["1st"],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Back up home plate."],
+[358,"Double","LF","Runner on 1st",["1st"],"LF","Move towards the ball.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[359,"Double","LF","Runner on 1st",["1st"],"CF","Field the ball and hit cutoff.","Back up 3B.","Throw to 3B.","Back up home plate."],
+[360,"Double","LF","Runner on 1st",["1st"],"RF","Move in to dirt behind 2B.","Back up 3B.","Throw to 3rd.","Back up home plate."],
+[361,"Bunt","3B Side","Bases empty",[],"P","Responsible for fielding bunts to the middle of infield.","Back up 3B.","Cover 2B.","Responsible for anything right in front of the plate."],
+[362,"Bunt","3B Side","Bases empty",[],"C","Responsible for anything right in front of the plate.","Throw to 2B.","Cover home plate.","Responsible for fielding bunts to the middle of infield."],
+[363,"Bunt","3B Side","Bases empty",[],"1B","Cover 1B.","Throw to 3B.","Cover 2B.","Responsible for fielding bunts to the middle of infield."],
+[364,"Bunt","3B Side","Bases empty",[],"2B","Cover 2B.","Cover 3B.","Back up home plate.","Responsible for fielding bunts to the middle of infield."],
+[365,"Bunt","3B Side","Bases empty",[],"SS","Back up Third Baseman and cover 3B.","Cover 1B.","Back up home plate.","Responsible for fielding bunts to the middle of infield."],
+[366,"Bunt","3B Side","Bases empty",[],"3B","Charge the ball and throw to 1B.","Throw to 2B.","Cover home plate.","Responsible for fielding bunts to the middle of infield."],
+[367,"Bunt","3B Side","Bases empty",[],"LF","Move in towards the infield.","Back up 3B.","Throw to 3B.","Responsible for fielding bunts to the middle of infield."],
+[368,"Bunt","3B Side","Bases empty",[],"CF","Move in towards the infield.","Back up 3B.","Throw to 3B.","Responsible for fielding bunts to the middle of infield."],
+[369,"Bunt","3B Side","Bases empty",[],"RF","Back up 1B.","Back up 3B.","Throw to 3rd.","Responsible for fielding bunts to the middle of infield."],
+[370,"Bunt","1B Side","Bases empty",[],"P","Responsible for fielding bunts to the middle of infield.","Back up 3B.","Cover 2B.","Responsible for anything right in front of the plate."],
+[371,"Bunt","1B Side","Bases empty",[],"C","Responsible for anything right in front of the plate.","Throw to 2B.","Cover home plate.","Responsible for fielding bunts to the middle of infield."],
+[372,"Bunt","1B Side","Bases empty",[],"1B","Charge the ball and throw to 1B.","Throw to 3B.","Cover 2B.","Responsible for fielding bunts to the middle of infield."],
+[373,"Bunt","1B Side","Bases empty",[],"2B","Cover 1B.","Cover 3B.","Back up home plate.","Responsible for fielding bunts to the middle of infield."],
+[374,"Bunt","1B Side","Bases empty",[],"SS","Cover 2B.","Cover 1B.","Back up home plate.","Responsible for fielding bunts to the middle of infield."],
+[375,"Bunt","1B Side","Bases empty",[],"3B","Cover 3B.","Throw to 2B.","Cover home plate.","Responsible for fielding bunts to the middle of infield."],
+[376,"Bunt","1B Side","Bases empty",[],"LF","Move in towards the infield.","Back up 3B.","Throw to 3B.","Responsible for fielding bunts to the middle of infield."],
+[377,"Bunt","1B Side","Bases empty",[],"CF","Move in towards the infield.","Back up 3B.","Throw to 3B.","Responsible for fielding bunts to the middle of infield."],
+[378,"Bunt","1B Side","Bases empty",[],"RF","Back up 1B.","Back up 3B.","Throw to 3rd.","Responsible for fielding bunts to the middle of infield."]];
+
+// QB format: [id, play_type, location, situation_label, bases_on, position, correct, wrong1, wrong2, wrong3]
+
+var SUPABASE_URL = 'https://hcadlkmejdekhbgfvyaq.supabase.co';
+var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjYWRsa21lamRla2hiZ2Z2eWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTg1MjIsImV4cCI6MjA4ODQ3NDUyMn0.PlHlQX5b5ts7SnXd7hWfuWi01Y_aK6QnWvzZPVb54Ko';
+
+var currentUser = null;
+var quizState = {
+  questions: [],
+  idx: 0,
+  correct: 0,
+  streak: 0,
+  bestStreak: 0,
+  mode: 'my-pos',
+  chosenPos: null
+};
+
+// ── SUPABASE HELPERS ──
+async function sbFetch(path, opts) {
+  var res = await fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({
+    headers: {
+      'apikey': SUPABASE_ANON,
+      'Authorization': 'Bearer ' + SUPABASE_ANON,
+      'Content-Type': 'application/json',
+      'Prefer': 'return=representation'
+    }
+  }, opts));
+  if (!res.ok) return null;
+  var ct = res.headers.get('content-type') || '';
+  if (ct.includes('json')) return res.json();
+  return null;
+}
+
+// ── AUTH ──
+function switchTab(tab) {
+  var isLogin = tab === 'login';
+  document.getElementById('tab-login').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('tab-signup').style.display = isLogin ? 'none' : 'block';
+  document.querySelectorAll('.auth-tab').forEach(function(t,i){ t.className = 'auth-tab' + (isLogin&&i===0||!isLogin&&i===1?' active':''); });
+}
+
+function getPIN(prefix) {
+  return [0,1,2,3].map(function(i){ return (document.getElementById(prefix+i)||{}).value||''; }).join('');
+}
+
+async function doLogin() {
+  var user = document.getElementById('login-user').value.trim().toLowerCase();
+  var pin = getPIN('lp');
+  document.getElementById('login-err').textContent = '';
+  if (!user || pin.length !== 4) { document.getElementById('login-err').textContent = 'Enter username and 4-digit PIN.'; return; }
+  var rows = await sbFetch('dm_users?username=eq.' + encodeURIComponent(user) + '&select=*');
+  if (!rows || !rows.length) { document.getElementById('login-err').textContent = 'Username not found.'; return; }
+  if (rows[0].pin !== pin) { document.getElementById('login-err').textContent = 'Wrong PIN.'; return; }
+  currentUser = rows[0];
+  localStorage.setItem('dm_user_id', currentUser.id);
+  loadHome();
+}
+
+async function doSignup() {
+  var user = document.getElementById('signup-user').value.trim().toLowerCase();
+  var selPos = document.querySelector('#signup-pos .pos-opt.sel');
+  var pos = selPos ? selPos.getAttribute('data-pos') : null;
+  var pin = getPIN('sp');
+  var err = document.getElementById('signup-err');
+  err.textContent = '';
+  if (!user) { err.textContent = 'Enter a username.'; return; }
+  if (!pos) { err.textContent = 'Pick your position.'; return; }
+  if (pin.length !== 4) { err.textContent = 'Create a 4-digit PIN.'; return; }
+  var exists = await sbFetch('dm_users?username=eq.' + encodeURIComponent(user) + '&select=id');
+  if (exists && exists.length) { err.textContent = 'Username taken. Try another.'; return; }
+  var rows = await sbFetch('dm_users', {method:'POST', body: JSON.stringify({username: user, pin: pin, position: pos, total_answered: 0, total_correct: 0, best_streak: 0})});
+  if (!rows || !rows.length) { err.textContent = 'Something went wrong. Try again.'; return; }
+  currentUser = rows[0];
+  localStorage.setItem('dm_user_id', currentUser.id);
+  loadHome();
+}
+
+async function tryAutoLogin() {
+  var uid = localStorage.getItem('dm_user_id');
+  if (!uid) return false;
+  var rows = await sbFetch('dm_users?id=eq.' + uid + '&select=*');
+  if (!rows || !rows.length) return false;
+  currentUser = rows[0];
+  return true;
+}
+
+function doLogout() {
+  localStorage.removeItem('dm_user_id');
+  currentUser = null;
+  showScreen('auth');
+  document.getElementById('bottom-nav').className = 'bottom-nav';
+}
+
+// ── HOME ──
+async function loadHome() {
+  showScreen('home');
+  document.getElementById('bottom-nav').className = 'bottom-nav show';
+  setNavActive('home');
+  var pos = currentUser.position;
+  var posNames = {P:'Pitcher',C:'Catcher','1B':'First Baseman','2B':'Second Baseman','3B':'Third Baseman',SS:'Shortstop',LF:'Left Fielder',CF:'Center Fielder',RF:'Right Fielder'};
+  document.getElementById('home-greeting').textContent = 'Hey, ' + currentUser.username + '!';
+  document.getElementById('home-sub').textContent = 'Ready to sharpen your baseball IQ?';
+  document.getElementById('hdr-pos').textContent = pos;
+  var tot = currentUser.total_answered || 0;
+  var cor = currentUser.total_correct || 0;
+  document.getElementById('stat-total').textContent = tot;
+  document.getElementById('stat-pct').textContent = tot > 0 ? Math.round(cor/tot*100) + '%' : '—';
+  document.getElementById('stat-streak').textContent = currentUser.best_streak || 0;
+}
+
+function startMode(mode) {
+  quizState.mode = mode;
+  document.getElementById('choose-pos-wrap').style.display = mode === 'choose' ? 'block' : 'none';
+  if (mode !== 'choose') launchQuiz(mode, null);
+}
+
+var chosenDrillPos = null;
+document.getElementById('choose-pos-bar').addEventListener('click', function(e) {
+  var pill = e.target.closest('.pos-pill');
+  if (!pill) return;
+  document.querySelectorAll('.pos-pill').forEach(function(p){ p.className = 'pos-pill'; });
+  pill.className = 'pos-pill active';
+  chosenDrillPos = pill.getAttribute('data-pos');
+});
+
+function launchChosenPos() {
+  if (!chosenDrillPos) { alert('Pick a position first.'); return; }
+  launchQuiz('choose', chosenDrillPos);
+}
+
+function launchQuiz(mode, chosenPos) {
+  var pool;
+  if (mode === 'my-pos') {
+    pool = QB.filter(function(q){ return q[5] === currentUser.position; });
+  } else if (mode === 'choose') {
+    pool = QB.filter(function(q){ return q[5] === chosenPos; });
+  } else {
+    pool = QB.slice();
+  }
+  // Shuffle
+  for (var i = pool.length-1; i>0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = pool[i]; pool[i] = pool[j]; pool[j] = tmp;
+  }
+  quizState.questions = pool.slice(0, 10);
+  quizState.idx = 0;
+  quizState.correct = 0;
+  quizState.streak = 0;
+  quizState.bestStreak = 0;
+  quizState.mode = mode;
+  quizState.chosenPos = chosenPos;
+  showScreen('quiz');
+  setNavActive(null);
+  renderQuestion();
+}
+
+// ── QUIZ ──
+function renderQuestion() {
+  var q = quizState.questions[quizState.idx];
+  var tot = quizState.questions.length;
+  var idx = quizState.idx;
+  document.getElementById('prog-fill').style.width = Math.round(idx/tot*100) + '%';
+  document.getElementById('prog-label').textContent = idx + ' / ' + tot;
+  document.getElementById('prog-score').textContent = quizState.correct + ' correct';
+
+  // Diamond
+  var bases = q[4];
+  var on1 = bases.indexOf('1st') >= 0;
+  var on2 = bases.indexOf('2nd') >= 0;
+  var on3 = bases.indexOf('3rd') >= 0;
+  var RUNNER = '#f0b429';
+  var EMPTY = '#091422';
+  document.getElementById('q-d1').style.fill = on1 ? RUNNER : EMPTY;
+  document.getElementById('q-d2').style.fill = on2 ? RUNNER : EMPTY;
+  document.getElementById('q-d3').style.fill = on3 ? RUNNER : EMPTY;
+
+  document.getElementById('q-bases').textContent = q[3];
+  document.getElementById('q-play').textContent = q[1] + ' to ' + q[2];
+  var posNames = {P:'Pitcher',C:'Catcher','1B':'First Baseman','2B':'Second Baseman','3B':'Third Baseman',SS:'Shortstop',LF:'Left Fielder',CF:'Center Fielder',RF:'Right Fielder'};
+  document.getElementById('q-pos-label').textContent = posNames[q[5]] || q[5];
+  document.getElementById('q-text').textContent = 'What is your job on this play?';
+
+  // Shuffle choices
+  var correct = q[6];
+  var choices = [correct, q[7], q[8], q[9]].filter(Boolean);
+  for (var i = choices.length-1; i>0; i--) {
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = choices[i]; choices[i] = choices[j]; choices[j] = tmp;
+  }
+  var correctIdx = choices.indexOf(correct);
+
+  var choicesEl = document.getElementById('q-choices');
+  choicesEl.innerHTML = '';
+  choices.forEach(function(c, ci) {
+    var btn = document.createElement('button');
+    btn.className = 'choice';
+    btn.textContent = c;
+    btn.onclick = function(){ answerQ(ci, correctIdx, choices, correct, btn); };
+    choicesEl.appendChild(btn);
+  });
+
+  document.getElementById('q-feedback').className = 'feedback-box';
+  document.getElementById('next-btn').className = 'next-btn';
+}
+
+var answered = false;
+function answerQ(chosen, correctIdx, choices, correctText, btn) {
+  if (answered) return;
+  answered = true;
+  var isRight = chosen === correctIdx;
+  if (isRight) { quizState.correct++; quizState.streak++; if (quizState.streak > quizState.bestStreak) quizState.bestStreak = quizState.streak; }
+  else { quizState.streak = 0; }
+  document.getElementById('prog-score').textContent = quizState.correct + ' correct';
+
+  var btns = document.getElementById('q-choices').querySelectorAll('.choice');
+  btns.forEach(function(b, i) {
+    if (i === correctIdx) b.className = 'choice correct';
+    else if (i === chosen && !isRight) b.className = 'choice wrong';
+    else if (i !== chosen) b.className = 'choice reveal';
+    b.onclick = null;
+  });
+
+  var fb = document.getElementById('q-feedback');
+  var lbl = document.getElementById('fb-label');
+  var txt = document.getElementById('fb-text');
+  lbl.className = 'fb-label ' + (isRight ? 'good' : 'bad');
+  lbl.textContent = isRight ? 'Correct!' : 'Not quite —';
+  txt.textContent = correctText;
+  fb.className = 'feedback-box show';
+  document.getElementById('next-btn').className = 'next-btn show';
+}
+
+function nextQuestion() {
+  answered = false;
+  quizState.idx++;
+  if (quizState.idx >= quizState.questions.length) {
+    finishQuiz();
+  } else {
+    renderQuestion();
+  }
+}
+
+async function finishQuiz() {
+  var tot = quizState.questions.length;
+  var cor = quizState.correct;
+  var pct = Math.round(cor/tot*100);
+  document.getElementById('res-pct').textContent = pct + '%';
+  document.getElementById('res-correct').textContent = cor;
+  document.getElementById('res-total').textContent = tot;
+  document.getElementById('res-streak').textContent = quizState.bestStreak;
+  document.getElementById('res-icon').textContent = pct >= 80 ? '🏆' : pct >= 60 ? '⚾' : '💪';
+  document.getElementById('res-title').textContent = pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Good Work!' : 'Keep Grinding!';
+  showScreen('results');
+
+  // Save session + update user stats
+  var newTotal = (currentUser.total_answered || 0) + tot;
+  var newCorrect = (currentUser.total_correct || 0) + cor;
+  var newBest = Math.max(currentUser.best_streak || 0, quizState.bestStreak);
+  await sbFetch('dm_users?id=eq.' + currentUser.id, {method:'PATCH', body: JSON.stringify({total_answered: newTotal, total_correct: newCorrect, best_streak: newBest})});
+  await sbFetch('dm_sessions', {method:'POST', body: JSON.stringify({user_id: currentUser.id, total_questions: tot, total_correct: cor, best_streak: quizState.bestStreak, mode: quizState.mode, position: quizState.chosenPos || currentUser.position})});
+  currentUser.total_answered = newTotal;
+  currentUser.total_correct = newCorrect;
+  currentUser.best_streak = newBest;
+}
+
+function exitQuiz() {
+  if (confirm('Exit this session? Progress will be lost.')) {
+    answered = false;
+    goHome();
+  }
+}
+
+function goHome() {
+  loadHome();
+  document.getElementById('bottom-nav').className = 'bottom-nav show';
+  setNavActive('home');
+}
+
+function replayMode() {
+  launchQuiz(quizState.mode, quizState.chosenPos);
+}
+
+// ── PROFILE ──
+async function loadProfile() {
+  showScreen('profile');
+  setNavActive('profile');
+  var pos = currentUser.position;
+  var posNames = {P:'Pitcher',C:'Catcher','1B':'First Baseman','2B':'Second Baseman','3B':'Third Baseman',SS:'Shortstop',LF:'Left Fielder',CF:'Center Fielder',RF:'Right Fielder'};
+  document.getElementById('prof-avatar').textContent = pos;
+  document.getElementById('prof-name').textContent = currentUser.username;
+  document.getElementById('prof-pos').textContent = posNames[pos] || pos;
+  var tot = currentUser.total_answered || 0;
+  var cor = currentUser.total_correct || 0;
+  document.getElementById('prof-total').textContent = tot;
+  document.getElementById('prof-pct').textContent = tot > 0 ? Math.round(cor/tot*100) + '%' : '—';
+  document.getElementById('prof-streak').textContent = currentUser.best_streak || 0;
+
+  var sessions = await sbFetch('dm_sessions?user_id=eq.' + currentUser.id + '&order=created_at.desc&limit=10&select=*');
+  var histEl = document.getElementById('prof-history');
+  histEl.innerHTML = '';
+  if (!sessions || !sessions.length) { histEl.innerHTML = '<div style="color:var(--ice2);font-size:13px;padding:12px 0">No sessions yet. Start training!</div>'; return; }
+  sessions.forEach(function(s) {
+    var pct = Math.round(s.total_correct / s.total_questions * 100);
+    var d = new Date(s.created_at);
+    var dateStr = d.toLocaleDateString('en-US', {month:'short', day:'numeric'});
+    var div = document.createElement('div');
+    div.className = 'history-item';
+    div.innerHTML = '<div class="hi-info">' + dateStr + ' &mdash; ' + s.position + ' &mdash; ' + s.total_correct + '/' + s.total_questions + '</div><div class="hi-score ' + (pct >= 70 ? 'good' : 'bad') + '">' + pct + '%</div>';
+    histEl.appendChild(div);
+  });
+}
+
+// ── NAV / SCREENS ──
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(function(s){ s.className = 'screen'; });
+  document.getElementById('screen-' + name).className = 'screen active';
+  answered = false;
+}
+
+function setNavActive(tab) {
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.className = 'nav-item'; });
+  if (tab) document.getElementById('nav-' + tab).className = 'nav-item active';
+}
+
+function showTab(tab) {
+  if (tab === 'home') loadHome();
+  else if (tab === 'profile') loadProfile();
+}
+
+// ── PIN INPUT FLOW ──
+function setupPinInputs(prefix, count) {
+  for (var i = 0; i < count; i++) {
+    (function(idx) {
+      var el = document.getElementById(prefix + idx);
+      if (!el) return;
+      el.addEventListener('input', function() {
+        el.value = el.value.replace(/[^0-9]/g,'').slice(-1);
+        if (el.value && idx < count - 1) document.getElementById(prefix + (idx+1)).focus();
+      });
+      el.addEventListener('keydown', function(e) {
+        if (e.key === 'Backspace' && !el.value && idx > 0) document.getElementById(prefix + (idx-1)).focus();
+      });
+    })(i);
+  }
+}
+setupPinInputs('lp', 4);
+setupPinInputs('sp', 4);
+
+// Position select in signup
+document.getElementById('signup-pos').addEventListener('click', function(e) {
+  var opt = e.target.closest('.pos-opt');
+  if (!opt) return;
+  document.querySelectorAll('.pos-opt').forEach(function(o){ o.className = 'pos-opt'; });
+  opt.className = 'pos-opt sel';
+});
+
+// ── INIT ──
+(async function() {
+  var ok = await tryAutoLogin();
+  if (ok) loadHome();
+})();
+</script>
+</body>
+</html>

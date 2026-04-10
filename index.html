@@ -347,6 +347,13 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
           <div class="mode-desc">Choose any position to drill</div>
         </div>
       </div>
+      <div class="mode-card" onclick="startMode('blitz')">
+        <div class="mode-icon" style="background:rgba(232,64,64,0.15)">⚡</div>
+        <div>
+          <div class="mode-title">Blitz Mode</div>
+          <div class="mode-desc">15 seconds per question — race the clock</div>
+        </div>
+      </div>
     </div>
 
     <div id="choose-pos-wrap" style="display:none">
@@ -371,7 +378,10 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
 <div class="screen" id="screen-quiz">
   <div class="hdr">
     <div class="logo">Diamond<span>Minds</span></div>
-    <button onclick="exitQuiz()" style="background:none;border:none;color:var(--ice2);font-size:13px;font-family:'Barlow',sans-serif;cursor:pointer;padding:4px">Exit</button>
+    <div style="display:flex;align-items:center;gap:10px">
+      <span id="quiz-mode-badge" class="badge-pill" style="display:none;background:rgba(232,64,64,0.15);border-color:rgba(232,64,64,0.3);color:#ffa0a0">⚡ BLITZ</span>
+      <button onclick="exitQuiz()" style="background:none;border:none;color:var(--ice2);font-size:13px;font-family:'Barlow',sans-serif;cursor:pointer;padding:4px">Exit</button>
+    </div>
   </div>
   <div class="quiz-progress">
     <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
@@ -379,7 +389,7 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
       <span id="prog-label">0 / 10</span>
       <span id="prog-score">0 correct &nbsp;⚡ <span id="prog-xp">0</span> XP</span>
     </div>
-    <div class="timer-wrap" style="margin-top:8px">
+    <div class="timer-wrap" id="timer-wrap" style="margin-top:8px;display:none">
       <div class="timer-bar-bg"><div class="timer-bar-fill" id="timer-fill" style="width:100%"></div></div>
       <div class="timer-num" id="timer-num">15</div>
     </div>
@@ -1194,6 +1204,10 @@ function startMode(mode) {
   if (mode !== 'choose') launchQuiz(mode, null);
 }
 
+function isBlitzMode() {
+  return quizState.mode === 'blitz';
+}
+
 var chosenDrillPos = null;
 document.getElementById('choose-pos-bar').addEventListener('click', function(e) {
   var pill = e.target.closest('.pos-pill');
@@ -1233,6 +1247,7 @@ function launchQuiz(mode, chosenPos) {
   sessionStreak = 0;
   showScreen('quiz');
   setNavActive(null);
+  document.getElementById('quiz-mode-badge').style.display = mode === 'blitz' ? 'inline-flex' : 'none';
   renderQuestion();
 }
 
@@ -1291,15 +1306,22 @@ function renderQuestion() {
   document.getElementById('q-feedback').className = 'feedback-box';
   document.getElementById('dyk-box').className = 'did-you-know';
   document.getElementById('next-btn').className = 'next-btn';
-  startTimer();
+  if (isBlitzMode()) {
+    document.getElementById('timer-wrap').style.display = 'flex';
+    startTimer();
+  } else {
+    document.getElementById('timer-wrap').style.display = 'none';
+    clearInterval(timerInterval);
+    timerLeft = TIMER_MAX;
+  }
 }
 
 function answerQ(chosen, correctIdx, choices, correctText, btn) {
   if (quizState.answered) return;
   quizState.answered = true;
-  clearInterval(timerInterval);
+  if (isBlitzMode()) clearInterval(timerInterval);
   var isRight = chosen === correctIdx;
-  var xpEarned = getXPForAnswer(isRight, timerLeft);
+  var xpEarned = getXPForAnswer(isRight, isBlitzMode() ? timerLeft : TIMER_MAX);
   sessionXP += xpEarned;
 
   if (isRight) {

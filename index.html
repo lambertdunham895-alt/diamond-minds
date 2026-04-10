@@ -164,6 +164,55 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
 .pos-marker.highlight circle{fill:rgba(240,180,41,0.9) !important;stroke:var(--gold) !important;stroke-width:1.2 !important}
 .pos-marker.highlight text{fill:var(--ink) !important}
 .you-are{padding:8px 14px 0;text-align:center;font-size:12px;color:var(--ice2);font-family:'Barlow Condensed',sans-serif;letter-spacing:.08em;text-transform:uppercase}
+
+/* ── XP BAR ── */
+.xp-bar-wrap{background:var(--ink3);border-radius:20px;height:8px;overflow:hidden;margin:6px 0 2px}
+.xp-bar-fill{height:100%;background:linear-gradient(90deg,var(--gold2),var(--gold));border-radius:20px;transition:width .5s ease}
+.xp-row{display:flex;justify-content:space-between;font-size:10px;font-family:'Barlow Condensed',sans-serif;letter-spacing:.06em;color:var(--ice2);margin-bottom:12px}
+.level-badge{display:inline-flex;align-items:center;gap:5px;background:var(--gold-dim);border:1px solid rgba(240,180,41,0.3);border-radius:20px;padding:3px 10px;font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:var(--gold);letter-spacing:.06em;margin-bottom:6px}
+
+/* ── TIMER ── */
+.timer-wrap{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.timer-bar-bg{flex:1;height:6px;background:var(--ink4);border-radius:3px;overflow:hidden}
+.timer-bar-fill{height:100%;border-radius:3px;transition:width .1s linear;background:var(--gold)}
+.timer-bar-fill.warn{background:#e84040}
+.timer-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold);min-width:24px;text-align:right;line-height:1}
+.timer-num.warn{color:var(--red)}
+
+/* ── COMBO / XP POPUP ── */
+.combo-pop{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);background:var(--gold);color:var(--ink);font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:.1em;padding:10px 24px;border-radius:14px;z-index:999;pointer-events:none;transition:transform .15s,opacity .3s}
+.combo-pop.show{transform:translate(-50%,-50%) scale(1)}
+.combo-pop.hide{opacity:0}
+
+/* ── SHAKE ── */
+@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-5px)}80%{transform:translateX(5px)}}
+.shake{animation:shake .35s ease}
+
+/* ── BADGES ── */
+.badges-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.badge-item{background:var(--ink3);border:1px solid rgba(255,255,255,0.08);border-radius:10px;padding:8px 10px;text-align:center;flex:0 0 calc(33% - 6px)}
+.badge-item.earned{border-color:rgba(240,180,41,0.3);background:var(--gold-dim)}
+.badge-icon{font-size:22px;margin-bottom:3px}
+.badge-name{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.06em;color:var(--ice2);line-height:1.2}
+.badge-item.earned .badge-name{color:var(--gold)}
+.badge-locked{opacity:.3}
+
+/* ── DID YOU KNOW ── */
+.did-you-know{background:var(--ink3);border-left:3px solid var(--gold);border-radius:0 8px 8px 0;padding:10px 12px;margin-top:10px;display:none}
+.did-you-know.show{display:block}
+.dyk-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);font-family:'Barlow Condensed',sans-serif;margin-bottom:4px}
+.dyk-text{font-size:13px;color:var(--ice);line-height:1.5}
+
+/* ── STREAK FLAME ── */
+.streak-flame{font-size:16px;margin-left:4px}
+
+/* ── LEVEL UP OVERLAY ── */
+.levelup-overlay{position:fixed;inset:0;background:rgba(5,12,20,0.92);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:1000;display:none}
+.levelup-overlay.show{display:flex}
+.levelup-title{font-family:'Bebas Neue',sans-serif;font-size:52px;color:var(--gold);letter-spacing:.1em;line-height:1;margin-bottom:8px}
+.levelup-sub{font-size:16px;color:var(--ice);margin-bottom:6px}
+.levelup-rank{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:var(--white);letter-spacing:.08em}
+.levelup-btn{margin-top:24px;padding:14px 40px;background:var(--gold);border:none;border-radius:var(--r);color:var(--ink);font-size:16px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;cursor:pointer}
 </style>
 </head>
 <body>
@@ -257,6 +306,9 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
         <div class="home-sub" id="home-sub">Ready to level up your IQ?</div>
       </div>
     </div>
+    <div class="level-badge" id="home-level-badge">⭐ Rookie</div>
+    <div class="xp-bar-wrap"><div class="xp-bar-fill" id="home-xp-bar" style="width:0%"></div></div>
+    <div class="xp-row"><span id="home-xp-label">0 XP</span><span id="home-xp-next">100 XP to next level</span></div>
     <div class="stat-row">
       <div class="stat-card">
         <div class="stat-num" id="stat-total">0</div>
@@ -325,7 +377,11 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
     <div class="prog-bar-bg"><div class="prog-bar-fill" id="prog-fill" style="width:0%"></div></div>
     <div class="prog-meta">
       <span id="prog-label">0 / 10</span>
-      <span id="prog-score">0 correct</span>
+      <span id="prog-score">0 correct &nbsp;⚡ <span id="prog-xp">0</span> XP</span>
+    </div>
+    <div class="timer-wrap" style="margin-top:8px">
+      <div class="timer-bar-bg"><div class="timer-bar-fill" id="timer-fill" style="width:100%"></div></div>
+      <div class="timer-num" id="timer-num">15</div>
     </div>
   </div>
   <div class="quiz-body">
@@ -361,6 +417,10 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
     <div class="feedback-box" id="q-feedback">
       <div class="fb-label" id="fb-label">Correct!</div>
       <div class="fb-text" id="fb-text"></div>
+    </div>
+    <div class="did-you-know" id="dyk-box">
+      <div class="dyk-label">Coaching tip</div>
+      <div class="dyk-text" id="dyk-text"></div>
     </div>
     <button class="next-btn" id="next-btn" onclick="nextQuestion()">Next Question</button>
   </div>
@@ -404,6 +464,8 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
       <div class="stat-card"><div class="stat-num" id="prof-pct">—</div><div class="stat-lbl">Accuracy</div></div>
       <div class="stat-card"><div class="stat-num" id="prof-streak">0</div><div class="stat-lbl">Best Streak</div></div>
     </div>
+    <div class="section-head">Badges</div>
+    <div class="badges-grid" id="prof-badges"></div>
     <div class="section-head">Recent sessions</div>
     <div id="prof-history"></div>
     <button class="btn-ghost" onclick="doLogout()" style="margin-top:20px">Sign Out</button>
@@ -804,6 +866,219 @@ var QB=[[1,"Fly ball","LF","Bases empty",[],"P","Move into back up position betw
 
 // QB format: [id, play_type, location, situation_label, bases_on, position, correct, wrong1, wrong2, wrong3]
 
+
+var TIPS = {
+  "Fly ball|LF": "The SS is the cutoff man on fly balls to LF — he lines himself up between LF and the target base.",
+  "Fly ball|CF": "On a fly ball to CF, either 2B or SS becomes the cutoff — whoever is on the correct side of 2B.",
+  "Fly ball|RF": "2B is always the cutoff on fly balls to RF. SS covers 2nd base.",
+  "Grounder|3B": "3B is one of the hardest positions — you must decide instantly whether to go to 1st or 2nd.",
+  "Grounder|SS": "SS is the quarterback of the infield — always know where you're throwing before the ball is hit.",
+  "Grounder|2B": "2B must turn double plays quickly. The key is catching and releasing in one smooth motion.",
+  "Grounder|1B": "When 1B fields a grounder, the pitcher must sprint to cover the bag immediately.",
+  "Grounder|P": "A pitcher who fields well is a huge weapon — P must know all four bases before the pitch.",
+  "Double|RF": "On doubles to RF, 2B is the primary cutoff man. He lines up toward 3B or home depending on runners.",
+  "Double|LF": "On doubles to LF, SS is the primary cutoff. The whole relay chain must stay in a straight line.",
+  "Double|Right Center": "Gap doubles are hardest to defend — the relay must be quick and accurate.",
+  "Double|Left Center": "CF and LF must communicate immediately on gap balls. Whoever has the better angle takes it.",
+  "Bunt|3B Side": "3B charges hard on bunts down the line. P covers middle bunts. C takes anything in front of the plate.",
+  "Bunt|1B Side": "On a 1B side bunt, 1B charges and 2B sprints to cover 1st base.",
+};
+
+function getTip(playType, location, situation) {
+  var key1 = playType + '|' + location + '|' + situation;
+  var key2 = playType + '|' + location;
+  return TIPS[key1] || TIPS[key2] || null;
+}
+
+
+var LEVELS = [
+  {level:1, name:"Rookie",      xpNeeded:0},
+  {level:2, name:"Little Leaguer", xpNeeded:100},
+  {level:3, name:"Varsity",     xpNeeded:250},
+  {level:4, name:"All-Star",    xpNeeded:500},
+  {level:5, name:"Pro",         xpNeeded:900},
+  {level:6, name:"MVP",         xpNeeded:1400},
+  {level:7, name:"Legend",      xpNeeded:2000},
+];
+
+var ALL_BADGES = [
+  {id:"first_answer",  icon:"⚾", name:"First Pitch",    desc:"Answer your first question"},
+  {id:"streak_3",      icon:"🔥", name:"On Fire",        desc:"3 correct in a row"},
+  {id:"streak_5",      icon:"💥", name:"Hot Streak",     desc:"5 correct in a row"},
+  {id:"streak_10",     icon:"🌟", name:"Unstoppable",    desc:"10 correct in a row"},
+  {id:"perfect_10",    icon:"💎", name:"Perfect Game",   desc:"10/10 in one session"},
+  {id:"pos_master",    icon:"🎯", name:"Position Master",desc:"Answer 50 questions at your position"},
+  {id:"all_positions", icon:"🏟️", name:"Full Team",      desc:"Play as every position"},
+  {id:"century",       icon:"💯", name:"Century",        desc:"Answer 100 total questions"},
+  {id:"speed_demon",   icon:"⚡", name:"Speed Demon",    desc:"Answer correctly in under 5 seconds"},
+];
+
+var sessionXP = 0;
+var sessionStreak = 0;
+var timerInterval = null;
+var timerLeft = 15;
+var TIMER_MAX = 15;
+var positionsPlayed = new Set();
+
+function getLevelInfo(xp) {
+  var cur = LEVELS[0];
+  var next = LEVELS[1];
+  for (var i = 0; i < LEVELS.length; i++) {
+    if (xp >= LEVELS[i].xpNeeded) {
+      cur = LEVELS[i];
+      next = LEVELS[i+1] || null;
+    }
+  }
+  return {cur: cur, next: next};
+}
+
+function getXPForAnswer(isCorrect, timeLeft) {
+  if (!isCorrect) return 0;
+  var base = 10;
+  var timeBonus = timeLeft >= 10 ? 5 : timeLeft >= 5 ? 2 : 0;
+  var streakBonus = sessionStreak >= 5 ? 5 : sessionStreak >= 3 ? 3 : 0;
+  return base + timeBonus + streakBonus;
+}
+
+function showCombo(text) {
+  var el = document.getElementById('combo-pop');
+  el.textContent = text;
+  el.className = 'combo-pop show';
+  setTimeout(function(){ el.className = 'combo-pop show hide'; }, 700);
+  setTimeout(function(){ el.className = 'combo-pop'; }, 1000);
+}
+
+function startTimer() {
+  clearInterval(timerInterval);
+  timerLeft = TIMER_MAX;
+  updateTimerUI();
+  timerInterval = setInterval(function() {
+    timerLeft--;
+    updateTimerUI();
+    if (timerLeft <= 0) {
+      clearInterval(timerInterval);
+      // Time's up — auto-wrong
+      timeUp();
+    }
+  }, 1000);
+}
+
+function updateTimerUI() {
+  var pct = (timerLeft / TIMER_MAX * 100);
+  var fill = document.getElementById('timer-fill');
+  var num = document.getElementById('timer-num');
+  if (!fill || !num) return;
+  fill.style.width = pct + '%';
+  fill.className = 'timer-bar-fill' + (timerLeft <= 5 ? ' warn' : '');
+  num.textContent = timerLeft;
+  num.className = 'timer-num' + (timerLeft <= 5 ? ' warn' : '');
+}
+
+function timeUp() {
+  if (quizState.answered) return;
+  quizState.answered = true;
+  sessionStreak = 0;
+  quizState.streak = 0;
+  var q = quizState.questions[quizState.idx];
+  var btns = document.getElementById('q-choices').querySelectorAll('.choice');
+  btns.forEach(function(b, i) {
+    b.onclick = null;
+    b.className = 'choice dimmed';
+  });
+  // Find and highlight correct
+  var choices = Array.from(btns).map(function(b){ return b.textContent; });
+  btns.forEach(function(b) {
+    if (b.textContent === q[6]) b.className = 'choice correct';
+  });
+  var fb = document.getElementById('q-feedback');
+  document.getElementById('fb-label').className = 'fb-label bad';
+  document.getElementById('fb-label').textContent = "Time's up!";
+  document.getElementById('fb-text').textContent = q[6];
+  fb.className = 'feedback-box show';
+  showDYK(q);
+  document.getElementById('next-btn').className = 'next-btn show';
+  document.getElementById('q-choices').classList.add('shake');
+  setTimeout(function(){ document.getElementById('q-choices').classList.remove('shake'); }, 400);
+}
+
+function showDYK(q) {
+  var tip = getTip(q[1], q[2], q[3]);
+  if (tip) {
+    document.getElementById('dyk-text').textContent = tip;
+    document.getElementById('dyk-box').className = 'did-you-know show';
+  } else {
+    document.getElementById('dyk-box').className = 'did-you-know';
+  }
+}
+
+function closeLevelUp() {
+  document.getElementById('levelup-overlay').className = 'levelup-overlay';
+}
+
+function checkLevelUp(oldXP, newXP) {
+  var oldInfo = getLevelInfo(oldXP);
+  var newInfo = getLevelInfo(newXP);
+  if (newInfo.cur.level > oldInfo.cur.level) {
+    document.getElementById('levelup-rank').textContent = newInfo.cur.name;
+    document.getElementById('levelup-overlay').className = 'levelup-overlay show';
+  }
+}
+
+function checkBadges(wasCorrect, isSessionEnd) {
+  var earned = currentUser.badges || [];
+  var newBadges = [];
+  var tot = currentUser.total_answered || 0;
+
+  if (!earned.includes('first_answer') && tot >= 1) newBadges.push('first_answer');
+  if (!earned.includes('streak_3') && sessionStreak >= 3) newBadges.push('streak_3');
+  if (!earned.includes('streak_5') && sessionStreak >= 5) newBadges.push('streak_5');
+  if (!earned.includes('streak_10') && sessionStreak >= 10) newBadges.push('streak_10');
+  if (!earned.includes('century') && tot >= 100) newBadges.push('century');
+  if (!earned.includes('speed_demon') && wasCorrect && timerLeft >= 10) newBadges.push('speed_demon');
+  if (isSessionEnd) {
+    if (!earned.includes('perfect_10') && quizState.correct === 10 && quizState.questions.length === 10) newBadges.push('perfect_10');
+    if (!earned.includes('pos_master')) {
+      var posQ = (currentUser.pos_answered || 0);
+      if (posQ >= 50) newBadges.push('pos_master');
+    }
+    positionsPlayed.add(currentUser.position);
+    if (!earned.includes('all_positions') && positionsPlayed.size >= 9) newBadges.push('all_positions');
+  }
+  return newBadges;
+}
+
+function renderBadges(earned) {
+  var el = document.getElementById('prof-badges');
+  if (!el) return;
+  el.innerHTML = '';
+  ALL_BADGES.forEach(function(b) {
+    var isEarned = earned.includes(b.id);
+    var div = document.createElement('div');
+    div.className = 'badge-item' + (isEarned ? ' earned' : ' badge-locked');
+    div.innerHTML = '<div class="badge-icon">' + b.icon + '</div><div class="badge-name">' + b.name + '</div>';
+    div.title = b.desc;
+    el.appendChild(div);
+  });
+}
+
+function updateHomeXPBar() {
+  var xp = currentUser.xp || 0;
+  var info = getLevelInfo(xp);
+  var cur = info.cur;
+  var next = info.next;
+  document.getElementById('home-level-badge').textContent = '⭐ ' + cur.name;
+  if (next) {
+    var pct = Math.min(100, Math.round((xp - cur.xpNeeded) / (next.xpNeeded - cur.xpNeeded) * 100));
+    document.getElementById('home-xp-bar').style.width = pct + '%';
+    document.getElementById('home-xp-label').textContent = xp + ' XP';
+    document.getElementById('home-xp-next').textContent = (next.xpNeeded - xp) + ' XP to ' + next.name;
+  } else {
+    document.getElementById('home-xp-bar').style.width = '100%';
+    document.getElementById('home-xp-label').textContent = xp + ' XP';
+    document.getElementById('home-xp-next').textContent = 'Max Level!';
+  }
+}
+
 var SUPABASE_URL = 'https://hcadlkmejdekhbgfvyaq.supabase.co';
 var SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjYWRsa21lamRla2hiZ2Z2eWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTg1MjIsImV4cCI6MjA4ODQ3NDUyMn0.PlHlQX5b5ts7SnXd7hWfuWi01Y_aK6QnWvzZPVb54Ko';
 
@@ -910,6 +1185,7 @@ async function loadHome() {
   document.getElementById('stat-total').textContent = tot;
   document.getElementById('stat-pct').textContent = tot > 0 ? Math.round(cor/tot*100) + '%' : '—';
   document.getElementById('stat-streak').textContent = currentUser.best_streak || 0;
+  updateHomeXPBar();
 }
 
 function startMode(mode) {
@@ -953,6 +1229,8 @@ function launchQuiz(mode, chosenPos) {
   quizState.bestStreak = 0;
   quizState.mode = mode;
   quizState.chosenPos = chosenPos;
+  sessionXP = 0;
+  sessionStreak = 0;
   showScreen('quiz');
   setNavActive(null);
   renderQuestion();
@@ -1009,17 +1287,38 @@ function renderQuestion() {
   });
 
   quizState.answered = false;
+  quizState.answered = false;
   document.getElementById('q-feedback').className = 'feedback-box';
+  document.getElementById('dyk-box').className = 'did-you-know';
   document.getElementById('next-btn').className = 'next-btn';
+  startTimer();
 }
 
 function answerQ(chosen, correctIdx, choices, correctText, btn) {
   if (quizState.answered) return;
   quizState.answered = true;
+  clearInterval(timerInterval);
   var isRight = chosen === correctIdx;
-  if (isRight) { quizState.correct++; quizState.streak++; if (quizState.streak > quizState.bestStreak) quizState.bestStreak = quizState.streak; }
-  else { quizState.streak = 0; }
-  document.getElementById('prog-score').textContent = quizState.correct + ' correct';
+  var xpEarned = getXPForAnswer(isRight, timerLeft);
+  sessionXP += xpEarned;
+
+  if (isRight) {
+    quizState.correct++;
+    quizState.streak++;
+    sessionStreak++;
+    if (quizState.streak > quizState.bestStreak) quizState.bestStreak = quizState.streak;
+    if (sessionStreak === 3) showCombo('3 IN A ROW!');
+    else if (sessionStreak === 5) showCombo('ON FIRE! x5');
+    else if (sessionStreak >= 10) showCombo('UNSTOPPABLE!');
+    else if (xpEarned > 10) showCombo('+' + xpEarned + ' XP');
+  } else {
+    quizState.streak = 0;
+    sessionStreak = 0;
+    document.getElementById('q-choices').classList.add('shake');
+    setTimeout(function(){ document.getElementById('q-choices').classList.remove('shake'); }, 400);
+  }
+
+  document.getElementById('prog-score').innerHTML = quizState.correct + ' correct &nbsp;⚡ <span id="prog-xp">' + sessionXP + '</span> XP';
 
   var btns = document.getElementById('q-choices').querySelectorAll('.choice');
   btns.forEach(function(b, i) {
@@ -1033,9 +1332,13 @@ function answerQ(chosen, correctIdx, choices, correctText, btn) {
   var lbl = document.getElementById('fb-label');
   var txt = document.getElementById('fb-text');
   lbl.className = 'fb-label ' + (isRight ? 'good' : 'bad');
-  lbl.textContent = isRight ? 'Correct!' : 'Not quite —';
+  lbl.textContent = isRight ? 'Correct! +' + xpEarned + ' XP' : 'Not quite —';
   txt.textContent = correctText;
   fb.className = 'feedback-box show';
+
+  var q = quizState.questions[quizState.idx];
+  showDYK(q);
+  checkBadges(isRight, false);
   document.getElementById('next-btn').className = 'next-btn show';
 }
 
@@ -1050,6 +1353,7 @@ function nextQuestion() {
 }
 
 async function finishQuiz() {
+  clearInterval(timerInterval);
   var tot = quizState.questions.length;
   var cor = quizState.correct;
   var pct = Math.round(cor/tot*100);
@@ -1061,15 +1365,34 @@ async function finishQuiz() {
   document.getElementById('res-title').textContent = pct >= 80 ? 'Outstanding!' : pct >= 60 ? 'Good Work!' : 'Keep Grinding!';
   showScreen('results');
 
-  // Save session + update user stats
   var newTotal = (currentUser.total_answered || 0) + tot;
   var newCorrect = (currentUser.total_correct || 0) + cor;
   var newBest = Math.max(currentUser.best_streak || 0, quizState.bestStreak);
-  await sbFetch('dm_users?id=eq.' + currentUser.id, {method:'PATCH', body: JSON.stringify({total_answered: newTotal, total_correct: newCorrect, best_streak: newBest})});
-  await sbFetch('dm_sessions', {method:'POST', body: JSON.stringify({user_id: currentUser.id, total_questions: tot, total_correct: cor, best_streak: quizState.bestStreak, mode: quizState.mode, position: quizState.chosenPos || currentUser.position})});
+  var oldXP = currentUser.xp || 0;
+  var newXP = oldXP + sessionXP;
+  var newLevel = getLevelInfo(newXP).cur.level;
+  var newBadges = checkBadges(false, true);
+  var allBadges = (currentUser.badges || []).concat(newBadges);
+
+  await sbFetch('dm_users?id=eq.' + currentUser.id, {method:'PATCH', body: JSON.stringify({
+    total_answered: newTotal, total_correct: newCorrect, best_streak: newBest,
+    xp: newXP, level: newLevel, badges: allBadges
+  })});
+  await sbFetch('dm_sessions', {method:'POST', body: JSON.stringify({
+    user_id: currentUser.id, total_questions: tot, total_correct: cor,
+    best_streak: quizState.bestStreak, mode: quizState.mode,
+    position: quizState.chosenPos || currentUser.position
+  })});
+
+  checkLevelUp(oldXP, newXP);
   currentUser.total_answered = newTotal;
   currentUser.total_correct = newCorrect;
   currentUser.best_streak = newBest;
+  currentUser.xp = newXP;
+  currentUser.level = newLevel;
+  currentUser.badges = allBadges;
+  sessionXP = 0;
+  sessionStreak = 0;
 }
 
 function exitQuiz() {
@@ -1103,6 +1426,7 @@ async function loadProfile() {
   document.getElementById('prof-total').textContent = tot;
   document.getElementById('prof-pct').textContent = tot > 0 ? Math.round(cor/tot*100) + '%' : '—';
   document.getElementById('prof-streak').textContent = currentUser.best_streak || 0;
+  renderBadges(currentUser.badges || []);
 
   var sessions = await sbFetch('dm_sessions?user_id=eq.' + currentUser.id + '&order=created_at.desc&limit=10&select=*');
   var histEl = document.getElementById('prof-history');
@@ -1169,5 +1493,14 @@ document.getElementById('signup-pos').addEventListener('click', function(e) {
   if (ok) loadHome();
 })();
 </script>
+
+<div class="levelup-overlay" id="levelup-overlay">
+  <div style="font-size:56px;margin-bottom:12px">🏆</div>
+  <div class="levelup-title">LEVEL UP!</div>
+  <div class="levelup-sub">You reached</div>
+  <div class="levelup-rank" id="levelup-rank">Pro</div>
+  <button class="levelup-btn" onclick="closeLevelUp()">Keep Playing</button>
+</div>
+<div class="combo-pop" id="combo-pop">NICE!</div>
 </body>
 </html>

@@ -795,7 +795,8 @@ var quizState = {
   streak: 0,
   bestStreak: 0,
   mode: 'my-pos',
-  chosenPos: null
+  chosenPos: null,
+  answered: false
 };
 
 // ── SUPABASE HELPERS ──
@@ -982,14 +983,14 @@ function renderQuestion() {
     choicesEl.appendChild(btn);
   });
 
+  quizState.answered = false;
   document.getElementById('q-feedback').className = 'feedback-box';
   document.getElementById('next-btn').className = 'next-btn';
 }
 
-var answered = false;
 function answerQ(chosen, correctIdx, choices, correctText, btn) {
-  if (answered) return;
-  answered = true;
+  if (quizState.answered) return;
+  quizState.answered = true;
   var isRight = chosen === correctIdx;
   if (isRight) { quizState.correct++; quizState.streak++; if (quizState.streak > quizState.bestStreak) quizState.bestStreak = quizState.streak; }
   else { quizState.streak = 0; }
@@ -1014,7 +1015,7 @@ function answerQ(chosen, correctIdx, choices, correctText, btn) {
 }
 
 function nextQuestion() {
-  answered = false;
+  quizState.answered = false;
   quizState.idx++;
   if (quizState.idx >= quizState.questions.length) {
     finishQuiz();
@@ -1048,7 +1049,7 @@ async function finishQuiz() {
 
 function exitQuiz() {
   if (confirm('Exit this session? Progress will be lost.')) {
-    answered = false;
+    quizState.answered = false;
     goHome();
   }
 }
@@ -1097,7 +1098,7 @@ async function loadProfile() {
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(function(s){ s.className = 'screen'; });
   document.getElementById('screen-' + name).className = 'screen active';
-  answered = false;
+  quizState.answered = false;
 }
 
 function setNavActive(tab) {

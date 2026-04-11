@@ -1107,7 +1107,7 @@ function timeUp() {
   document.getElementById('fb-label').textContent = "Time's up!";
   document.getElementById('fb-text').textContent = q[6];
   fb.className = 'feedback-box show';
-  document.getElementById('tap-instruction').textContent = "Here's what everyone does:";
+  document.getElementById('tap-instruction').textContent = 'Here\'s what everyone does:';
   document.getElementById('tap-instruction').style.color = 'var(--ice2)';
 
   var wrap = document.getElementById('field-wrap');
@@ -1490,7 +1490,7 @@ function tapPosition(tappedPos) {
   fb.className = 'feedback-box show';
 
   // Tap instruction update
-  document.getElementById('tap-instruction').textContent = isRight ? 'Watch the play unfold!' : 'Here's what everyone does:';
+  document.getElementById('tap-instruction').textContent = isRight ? 'Watch the play unfold!' : 'Here\'s what everyone does:';
   document.getElementById('tap-instruction').style.color = isRight ? 'var(--green)' : 'var(--ice2)';
 
   showDYK(q);

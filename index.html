@@ -1223,18 +1223,30 @@ var quizState = {
 
 // ── SUPABASE HELPERS ──
 async function sbFetch(path, opts) {
-  var res = await fetch(SUPABASE_URL + '/rest/v1/' + path, Object.assign({
+  var defaults = {
     headers: {
       'apikey': SUPABASE_ANON,
       'Authorization': 'Bearer ' + SUPABASE_ANON,
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
     }
-  }, opts));
-  if (!res.ok) return null;
-  var ct = res.headers.get('content-type') || '';
-  if (ct.includes('json')) return res.json();
-  return null;
+  };
+  var merged = Object.assign({}, defaults, opts);
+  merged.headers = Object.assign({}, defaults.headers, (opts && opts.headers) || {});
+  try {
+    var res = await fetch(SUPABASE_URL + '/rest/v1/' + path, merged);
+    if (!res.ok) {
+      var errText = await res.text();
+      console.error('sbFetch error', res.status, errText);
+      return null;
+    }
+    var ct = res.headers.get('content-type') || '';
+    if (ct.includes('json')) return res.json();
+    return null;
+  } catch(e) {
+    console.error('sbFetch exception', e);
+    return null;
+  }
 }
 
 // ── AUTH ──
@@ -1255,8 +1267,9 @@ async function doLogin() {
   document.getElementById('login-err').textContent = '';
   if (!user || pin.length !== 4) { document.getElementById('login-err').textContent = 'Enter username and 4-digit PIN.'; return; }
   var rows = await sbFetch('dm_users?username=eq.' + encodeURIComponent(user) + '&select=*');
-  if (!rows || !rows.length) { document.getElementById('login-err').textContent = 'Username not found.'; return; }
-  if (rows[0].pin !== pin) { document.getElementById('login-err').textContent = 'Wrong PIN.'; return; }
+  if (rows === null) { document.getElementById('login-err').textContent = 'Connection error. Check your internet and try again.'; return; }
+  if (!rows.length) { document.getElementById('login-err').textContent = 'Username not found. Check spelling.'; return; }
+  if (rows[0].pin !== pin) { document.getElementById('login-err').textContent = 'Wrong PIN. Try again.'; return; }
   currentUser = rows[0];
   localStorage.setItem('dm_user_id', currentUser.id);
   loadHome();

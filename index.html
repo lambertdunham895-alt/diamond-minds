@@ -181,6 +181,7 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
     <div class="mc" onclick="startMode('my-pos')"><div class="mi" style="background:rgba(240,180,41,.12)">&#127919;</div><div><div class="mt">My Position</div><div class="md">Questions only for your position</div></div></div>
     <div class="mc" onclick="startMode('all-pos')"><div class="mi" style="background:rgba(56,135,220,.12)">&#127967;</div><div><div class="mt">Full Team</div><div class="md">Random position each question</div></div></div>
     <div class="mc" onclick="startMode('choose')"><div class="mi" style="background:rgba(46,160,67,.12)">&#9881;&#65039;</div><div><div class="mt">Pick a Position</div><div class="md">Choose any position to drill</div></div></div>
+    <div class="mc" onclick="startMode('blitz')"><div class="mi" style="background:rgba(232,64,64,.12)">&#9889;</div><div><div class="mt">Blitz Mode</div><div class="md">15 seconds per question — race the clock</div></div></div>
     <div id="choose-wrap" style="display:none;margin-top:4px">
       <div class="sh">Choose Position</div>
       <div class="ppills" id="choose-pills">
@@ -199,13 +200,13 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
 <!-- QUIZ -->
 <div class="screen" id="s-quiz">
   <div class="hdr">
-    <div class="logo">Diamond<span>Minds</span></div>
+    <div style="display:flex;align-items:center;gap:8px"><div class="logo">Diamond<span>Minds</span></div><span id="blitz-badge" style="display:none;background:rgba(232,64,64,.15);border:1px solid rgba(232,64,64,.3);color:#ffa0a0;font-family:'Barlow Condensed',sans-serif;font-size:11px;font-weight:700;letter-spacing:.1em;padding:3px 10px;border-radius:20px">⚡ BLITZ</span></div>
     <button onclick="exitQuiz()" style="background:none;border:none;color:#7a9fbf;font-size:13px;cursor:pointer;padding:4px;font-family:'Barlow',sans-serif">Exit</button>
   </div>
   <div class="qprog">
     <div class="pb"><div class="pf" id="q-pf" style="width:0%"></div></div>
     <div class="pm"><span id="q-pl">0 / 10</span><span id="q-sl">0 correct</span></div>
-    <div class="timer-wrap" style="margin-top:8px">
+    <div class="timer-wrap" id="timer-wrap" style="margin-top:8px;display:none">
       <div class="timer-bg"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
       <div class="timer-num" id="timer-num">15</div>
     </div>
@@ -814,6 +815,33 @@ function showCombo(txt){
   setTimeout(function(){el.className='combo-pop';},1100);
 }
 
+function showXPPop(xp){
+  var pop=document.getElementById('xp-pop');
+  var inner=document.getElementById('xp-pop-inner');
+  var num=document.getElementById('xp-pop-num');
+  var lbl=document.getElementById('xp-pop-label');
+  num.textContent='+'+xp+' XP';
+  lbl.textContent=sessionStreak>=5?'HOT STREAK BONUS!':sessionStreak>=3?'STREAK BONUS!':xp>10?'SPEED BONUS!':'';
+  pop.style.display='flex';
+  inner.style.transform='scale(0)';
+  requestAnimationFrame(function(){
+    requestAnimationFrame(function(){
+      inner.style.transform='scale(1)';
+    });
+  });
+  setTimeout(function(){
+    inner.style.transition='transform .2s ease, opacity .3s ease';
+    inner.style.opacity='0';
+    inner.style.transform='scale(1.1)';
+  },900);
+  setTimeout(function(){
+    pop.style.display='none';
+    inner.style.opacity='1';
+    inner.style.transform='scale(0)';
+    inner.style.transition='transform .2s cubic-bezier(.34,1.56,.64,1)';
+  },1200);
+}
+
 function startTimer(){
   clearInterval(timerInterval);
   timerLeft=TIMER_MAX;
@@ -855,6 +883,7 @@ function timeUp(){
   var tip=TIPS[q[1]+'|'+q[2]];
   if(tip){document.getElementById('q-tipt').textContent=tip;document.getElementById('q-tip').className='tip show';}
   document.getElementById('q-nxt').className='nxt show';
+  if(right&&xpEarned>0) showXPPop(xpEarned);
   var box=document.getElementById('q-choices');
   box.classList.add('shake');
   setTimeout(function(){box.classList.remove('shake');},400);
@@ -991,7 +1020,8 @@ function loadHome(){
 function startMode(m){
   qs.mode=m;
   document.getElementById('choose-wrap').style.display=m==='choose'?'block':'none';
-  if(m!=='choose') launch(m,null);
+  if(m!=='choose'&&m!=='blitz') launch(m,null);
+  if(m==='blitz') launch('blitz',null);
 }
 
 document.getElementById('choose-pills').addEventListener('click',function(e){
@@ -1014,6 +1044,9 @@ function launch(mode,pos){
   sessionXP=0;
   sessionStreak=0;
   show('s-quiz');
+  var isBlitz=mode==='blitz';
+  document.getElementById('blitz-badge').style.display=isBlitz?'inline-flex':'none';
+  document.getElementById('timer-wrap').style.display=isBlitz?'flex':'none';
   renderQ();
 }
 
@@ -1054,7 +1087,7 @@ function renderQ(){
   document.getElementById('q-fb').className='fb';
   document.getElementById('q-tip').className='tip';
   document.getElementById('q-nxt').className='nxt';
-  startTimer();
+  if(qs.mode==='blitz') startTimer(); else clearInterval(timerInterval);
   var correct=q[6];
   var options=shuffle([correct,q[7],q[8],q[9]].filter(Boolean));
   var box=document.getElementById('q-choices'); box.innerHTML='';
@@ -1069,9 +1102,9 @@ function renderQ(){
 function answer(chosen,correct,q){
   if(answered) return;
   answered=true;
-  clearInterval(timerInterval);
+  if(qs.mode==='blitz') clearInterval(timerInterval);
   var right=chosen===correct;
-  var xpEarned=calcXP(right,timerLeft);
+  var xpEarned=calcXP(right, qs.mode==='blitz' ? timerLeft : TIMER_MAX);
   sessionXP+=xpEarned;
   if(right){
     qs.correct++;qs.streak++;if(qs.streak>qs.best)qs.best=qs.streak;
@@ -1086,7 +1119,7 @@ function answer(chosen,correct,q){
   var btns=document.getElementById('q-choices').querySelectorAll('.choice');
   btns.forEach(function(b){
     b.disabled=true;
-    if(b.textContent===correct){ b.className='choice correct'; if(right&&b.textContent===chosen&&xpEarned>0) b.textContent=correct+' +'+xpEarned+' XP'; }
+    if(b.textContent===correct) b.className='choice correct';
     else if(b.textContent===chosen&&!right) b.className='choice wrong';
     else b.className='choice dim';
   });
@@ -1186,5 +1219,11 @@ async function goProfile(){
   <button class="lvlup-btn" onclick="document.getElementById('lvlup').classList.remove('show')">Keep Playing</button>
 </div>
 <div class="combo-pop" id="combo-pop">NICE!</div>
+<div id="xp-pop" style="display:none;position:fixed;inset:0;pointer-events:none;z-index:998;align-items:center;justify-content:center;flex-direction:column">
+  <div id="xp-pop-inner" style="text-align:center;transform:scale(0);transition:transform .2s cubic-bezier(.34,1.56,.64,1)">
+    <div id="xp-pop-num" style="font-family:'Bebas Neue',sans-serif;font-size:72px;color:#f0b429;line-height:1;text-shadow:0 0 40px rgba(240,180,41,.6)">+10 XP</div>
+    <div id="xp-pop-label" style="font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:700;letter-spacing:.15em;color:#f4efe4;margin-top:4px"></div>
+  </div>
+</div>
 </body>
 </html>

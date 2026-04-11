@@ -279,6 +279,7 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
         </div>
       </div>
       <div class="err-msg" id="login-err"></div>
+      <div id="debug-box" style="display:none;background:#0d1d2e;border:1px solid rgba(240,180,41,0.3);border-radius:8px;padding:10px;margin-top:8px;font-size:11px;color:#c8dff0;font-family:monospace;word-break:break-all;line-height:1.6;max-height:150px;overflow-y:auto"></div>
       <button class="btn-primary" onclick="doLogin()">Sign In</button>
     </div>
 
@@ -1262,14 +1263,48 @@ function getPIN(prefix) {
 }
 
 async function doLogin() {
+  var dbg = document.getElementById('debug-box');
+  dbg.style.display = 'block';
+  dbg.textContent = '';
+  function log(msg) { dbg.textContent += msg + '\n'; }
+
   var user = document.getElementById('login-user').value.trim().toLowerCase();
   var pin = getPIN('lp');
   document.getElementById('login-err').textContent = '';
-  if (!user || pin.length !== 4) { document.getElementById('login-err').textContent = 'Enter username and 4-digit PIN.'; return; }
+
+  log('User: "' + user + '"');
+  log('PIN length: ' + pin.length);
+
+  if (!user || pin.length !== 4) {
+    document.getElementById('login-err').textContent = 'Enter username and 4-digit PIN.';
+    log('FAIL: missing user or PIN');
+    return;
+  }
+
+  log('Fetching from Supabase...');
+  log('URL: ' + SUPABASE_URL);
+
   var rows = await sbFetch('dm_users?username=eq.' + encodeURIComponent(user) + '&select=*', 'GET');
-  if (rows === null) { document.getElementById('login-err').textContent = 'Connection error. Check your internet and try again.'; return; }
-  if (!rows.length) { document.getElementById('login-err').textContent = 'Username not found. Check spelling.'; return; }
-  if (rows[0].pin !== pin) { document.getElementById('login-err').textContent = 'Wrong PIN. Try again.'; return; }
+
+  log('Response: ' + JSON.stringify(rows));
+
+  if (rows === null) {
+    document.getElementById('login-err').textContent = 'Connection error. Check your internet and try again.';
+    log('FAIL: null response');
+    return;
+  }
+  if (!rows.length) {
+    document.getElementById('login-err').textContent = 'Username not found. Check spelling.';
+    log('FAIL: no rows');
+    return;
+  }
+  log('DB pin: "' + rows[0].pin + '" | Entered: "' + pin + '"');
+  if (rows[0].pin !== pin) {
+    document.getElementById('login-err').textContent = 'Wrong PIN. Try again.';
+    log('FAIL: PIN mismatch');
+    return;
+  }
+  log('SUCCESS - logging in');
   currentUser = rows[0];
   localStorage.setItem('dm_user_id', currentUser.id);
   loadHome();

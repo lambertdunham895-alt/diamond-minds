@@ -88,6 +88,37 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
 .hisc.g{color:#2ea043}.hisc.b{color:#e84040}
 @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-7px)}40%{transform:translateX(7px)}60%{transform:translateX(-4px)}80%{transform:translateX(4px)}}
 .shake{animation:shake .35s ease}
+
+/* XP BAR */
+.xp-wrap{background:#0d1d2e;border-radius:20px;height:8px;overflow:hidden;margin:6px 0 2px}
+.xp-fill{height:100%;background:#f0b429;border-radius:20px;transition:width .5s ease}
+.xp-row{display:flex;justify-content:space-between;font-size:10px;color:#7a9fbf;font-family:'Barlow Condensed',sans-serif;margin-bottom:12px}
+.lvl-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(240,180,41,.12);border:1px solid rgba(240,180,41,.3);border-radius:20px;padding:3px 10px;font-size:12px;font-family:'Barlow Condensed',sans-serif;font-weight:700;color:#f0b429;letter-spacing:.06em;margin-bottom:6px}
+/* TIMER */
+.timer-wrap{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.timer-bg{flex:1;height:6px;background:#132333;border-radius:3px;overflow:hidden}
+.timer-fill{height:100%;background:#f0b429;border-radius:3px;transition:width .1s linear}
+.timer-fill.red{background:#e84040}
+.timer-num{font-family:'Bebas Neue',sans-serif;font-size:18px;color:#f0b429;min-width:24px;text-align:right;line-height:1}
+.timer-num.red{color:#e84040}
+/* COMBO POPUP */
+.combo-pop{position:fixed;top:35%;left:50%;transform:translate(-50%,-50%) scale(0);background:#f0b429;color:#050c14;font-family:'Bebas Neue',sans-serif;font-size:34px;letter-spacing:.1em;padding:10px 24px;border-radius:14px;z-index:999;pointer-events:none;transition:transform .15s,opacity .4s}
+.combo-pop.show{transform:translate(-50%,-50%) scale(1)}
+.combo-pop.fade{opacity:0}
+/* LEVEL UP */
+.lvlup{position:fixed;inset:0;background:rgba(5,12,20,.95);display:none;flex-direction:column;align-items:center;justify-content:center;z-index:1000}
+.lvlup.show{display:flex}
+.lvlup-title{font-family:'Bebas Neue',sans-serif;font-size:52px;color:#f0b429;letter-spacing:.1em;line-height:1;margin-bottom:8px}
+.lvlup-rank{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#f4efe4;letter-spacing:.08em}
+.lvlup-btn{margin-top:24px;padding:14px 40px;background:#f0b429;border:none;border-radius:10px;color:#050c14;font-size:16px;font-weight:700;font-family:'Barlow Condensed',sans-serif;letter-spacing:.1em;cursor:pointer}
+/* BADGES */
+.badges-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px}
+.bdg{background:#0d1d2e;border:1px solid rgba(255,255,255,.08);border-radius:10px;padding:8px;text-align:center;flex:0 0 calc(33.33% - 6px)}
+.bdg.earned{border-color:rgba(240,180,41,.3);background:rgba(240,180,41,.08)}
+.bdg-icon{font-size:22px;margin-bottom:3px}
+.bdg-name{font-size:10px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.06em;color:#7a9fbf;line-height:1.2}
+.bdg.earned .bdg-name{color:#f0b429}
+.bdg.locked{opacity:.3}
 </style>
 </head>
 <body>
@@ -138,6 +169,9 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
         <div style="font-size:12px;color:#c8dff0">Ready to sharpen your baseball IQ?</div>
       </div>
     </div>
+    <div class="lvl-badge" id="h-lvl-badge">&#11088; Rookie</div>
+    <div class="xp-wrap"><div class="xp-fill" id="h-xp-fill" style="width:0%"></div></div>
+    <div class="xp-row"><span id="h-xp-lbl">0 XP</span><span id="h-xp-next">100 XP to Little Leaguer</span></div>
     <div class="srow">
       <div class="sc"><div class="sn" id="h-tot">0</div><div class="sl">Questions</div></div>
       <div class="sc"><div class="sn" id="h-pct">&#8212;</div><div class="sl">Accuracy</div></div>
@@ -171,6 +205,10 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
   <div class="qprog">
     <div class="pb"><div class="pf" id="q-pf" style="width:0%"></div></div>
     <div class="pm"><span id="q-pl">0 / 10</span><span id="q-sl">0 correct</span></div>
+    <div class="timer-wrap" style="margin-top:8px">
+      <div class="timer-bg"><div class="timer-fill" id="timer-fill" style="width:100%"></div></div>
+      <div class="timer-num" id="timer-num">15</div>
+    </div>
   </div>
   <div class="scroll">
     <!-- ONE field photo with position markers and situation info overlaid -->
@@ -252,6 +290,8 @@ html,body{height:100%;overflow:hidden;background:#050c14;color:#f4efe4;font-fami
       <div class="sc"><div class="sn" id="p-pct">&#8212;</div><div class="sl">Accuracy</div></div>
       <div class="sc"><div class="sn" id="p-str">0</div><div class="sl">Best Streak</div></div>
     </div>
+    <div class="sh">Badges</div>
+    <div class="badges-grid" id="p-badges"></div>
     <div class="sh">Recent Sessions</div>
     <div id="p-hist"></div>
     <button class="btn-ghost" onclick="doLogout()" style="margin-top:20px">Sign Out</button>
@@ -723,6 +763,160 @@ var ARROWS = {
   "Bunt|1B Side|No Runners": [[68.9,53.1,67.0,54.1,"throw"],[50.1,50.9,50.5,38.9,"move"],[49.5,71.9,50.5,38.9,"move"],[55.4,43.4,67.0,54.1,"move"],[45.2,43.3,50.5,38.9,"move"],[31.2,52.8,33.1,53.8,"move"],[21.5,32.2,28,45,"move"],[50.0,20.5,50.5,35,"move"],[78.1,32.2,70,45,"move"]]
 };
 
+
+// ── LEVELS ──
+var LEVELS=[
+  {l:1,name:'Rookie',xp:0},
+  {l:2,name:'Little Leaguer',xp:100},
+  {l:3,name:'Varsity',xp:250},
+  {l:4,name:'All-Star',xp:500},
+  {l:5,name:'Pro',xp:900},
+  {l:6,name:'MVP',xp:1400},
+  {l:7,name:'Legend',xp:2000}
+];
+
+// ── BADGES ──
+var ALL_BADGES=[
+  {id:'first_answer', icon:'⚾', name:'First Pitch'},
+  {id:'streak_3',     icon:'🔥', name:'On Fire'},
+  {id:'streak_5',     icon:'💥', name:'Hot Streak'},
+  {id:'streak_10',    icon:'🌟', name:'Unstoppable'},
+  {id:'perfect_10',   icon:'💎', name:'Perfect Game'},
+  {id:'century',      icon:'💯', name:'Century'},
+  {id:'speed_demon',  icon:'⚡', name:'Speed Demon'},
+  {id:'all_star',     icon:'🏆', name:'All-Star'},
+  {id:'legend',       icon:'👑', name:'Legend'}
+];
+
+var sessionXP=0, sessionStreak=0, timerInterval=null, timerLeft=15, TIMER_MAX=15;
+
+function getLevelInfo(xp){
+  var cur=LEVELS[0], next=LEVELS[1];
+  for(var i=0;i<LEVELS.length;i++){
+    if(xp>=LEVELS[i].xp){ cur=LEVELS[i]; next=LEVELS[i+1]||null; }
+  }
+  return {cur:cur,next:next};
+}
+
+function calcXP(isRight, timeLeft){
+  if(!isRight) return 0;
+  var base=10;
+  var time = timeLeft>=10?5:timeLeft>=5?2:0;
+  var streak = sessionStreak>=5?5:sessionStreak>=3?3:0;
+  return base+time+streak;
+}
+
+function showCombo(txt){
+  var el=document.getElementById('combo-pop');
+  el.textContent=txt;
+  el.className='combo-pop show';
+  setTimeout(function(){el.className='combo-pop show fade';},700);
+  setTimeout(function(){el.className='combo-pop';},1100);
+}
+
+function startTimer(){
+  clearInterval(timerInterval);
+  timerLeft=TIMER_MAX;
+  updateTimerUI();
+  timerInterval=setInterval(function(){
+    timerLeft--;
+    updateTimerUI();
+    if(timerLeft<=0){ clearInterval(timerInterval); timeUp(); }
+  },1000);
+}
+
+function updateTimerUI(){
+  var pct=timerLeft/TIMER_MAX*100;
+  var fill=document.getElementById('timer-fill');
+  var num=document.getElementById('timer-num');
+  if(!fill||!num) return;
+  fill.style.width=pct+'%';
+  var warn=timerLeft<=5;
+  fill.className='timer-fill'+(warn?' red':'');
+  num.textContent=timerLeft;
+  num.className='timer-num'+(warn?' red':'');
+}
+
+function timeUp(){
+  if(answered) return;
+  answered=true;
+  sessionStreak=0;
+  var q=qs.questions[qs.idx];
+  var btns=document.getElementById('q-choices').querySelectorAll('.choice');
+  btns.forEach(function(b){
+    b.disabled=true;
+    if(b.textContent===q[6]) b.className='choice correct';
+    else b.className='choice dim';
+  });
+  document.getElementById('q-fbl').className='fbl bad';
+  document.getElementById('q-fbl').textContent="Time's up!";
+  document.getElementById('q-fbt').textContent=q[6];
+  document.getElementById('q-fb').className='fb show bad';
+  var tip=TIPS[q[1]+'|'+q[2]];
+  if(tip){document.getElementById('q-tipt').textContent=tip;document.getElementById('q-tip').className='tip show';}
+  document.getElementById('q-nxt').className='nxt show';
+  var box=document.getElementById('q-choices');
+  box.classList.add('shake');
+  setTimeout(function(){box.classList.remove('shake');},400);
+  setTimeout(function(){showArrows(q);},400);
+}
+
+function checkLevelUp(oldXP, newXP){
+  var oldLvl=getLevelInfo(oldXP).cur.l;
+  var newLvl=getLevelInfo(newXP).cur.l;
+  if(newLvl>oldLvl){
+    document.getElementById('lvlup-rank').textContent=getLevelInfo(newXP).cur.name;
+    document.getElementById('lvlup').classList.add('show');
+  }
+}
+
+function checkBadges(isRight, isEnd){
+  var earned=user.badges||[];
+  var newBadges=[];
+  var tot=user.total_answered||0;
+  if(!earned.includes('first_answer')&&tot>=1) newBadges.push('first_answer');
+  if(!earned.includes('streak_3')&&sessionStreak>=3) newBadges.push('streak_3');
+  if(!earned.includes('streak_5')&&sessionStreak>=5) newBadges.push('streak_5');
+  if(!earned.includes('streak_10')&&sessionStreak>=10) newBadges.push('streak_10');
+  if(!earned.includes('century')&&tot>=100) newBadges.push('century');
+  if(!earned.includes('speed_demon')&&isRight&&timerLeft>=10) newBadges.push('speed_demon');
+  if(isEnd){
+    if(!earned.includes('perfect_10')&&qs.correct===10) newBadges.push('perfect_10');
+    if(!earned.includes('all_star')&&getLevelInfo(user.xp||0).cur.l>=4) newBadges.push('all_star');
+    if(!earned.includes('legend')&&getLevelInfo(user.xp||0).cur.l>=7) newBadges.push('legend');
+  }
+  return newBadges;
+}
+
+function renderBadges(earned){
+  var el=document.getElementById('p-badges'); if(!el) return;
+  el.innerHTML='';
+  ALL_BADGES.forEach(function(b){
+    var isEarned=earned.includes(b.id);
+    var div=document.createElement('div');
+    div.className='bdg'+(isEarned?' earned':' locked');
+    div.innerHTML='<div class="bdg-icon">'+b.icon+'</div><div class="bdg-name">'+b.name+'</div>';
+    el.appendChild(div);
+  });
+}
+
+function updateHomeXP(){
+  var xp=user.xp||0;
+  var info=getLevelInfo(xp);
+  var cur=info.cur, next=info.next;
+  document.getElementById('h-lvl-badge').textContent='⭐ '+cur.name;
+  if(next){
+    var pct=Math.min(100,Math.round((xp-cur.xp)/(next.xp-cur.xp)*100));
+    document.getElementById('h-xp-fill').style.width=pct+'%';
+    document.getElementById('h-xp-lbl').textContent=xp+' XP';
+    document.getElementById('h-xp-next').textContent=(next.xp-xp)+' XP to '+next.name;
+  } else {
+    document.getElementById('h-xp-fill').style.width='100%';
+    document.getElementById('h-xp-lbl').textContent=xp+' XP';
+    document.getElementById('h-xp-next').textContent='Max Level — Legend!';
+  }
+}
+
 var user=null, qs={}, answered=false, chosenPos=null;
 
 async function sb(path,method,body){
@@ -791,6 +985,7 @@ function loadHome(){
   document.getElementById('choose-wrap').style.display='none';
   chosenPos=null;
   document.querySelectorAll('.pp').forEach(function(p){p.classList.remove('on');});
+  updateHomeXP();
 }
 
 function startMode(m){
@@ -816,6 +1011,8 @@ function launch(mode,pos){
   else pool=QB.slice();
   qs={mode:mode,pos:pos,questions:shuffle(pool).slice(0,10),idx:0,correct:0,streak:0,best:0};
   answered=false;
+  sessionXP=0;
+  sessionStreak=0;
   show('s-quiz');
   renderQ();
 }
@@ -857,6 +1054,7 @@ function renderQ(){
   document.getElementById('q-fb').className='fb';
   document.getElementById('q-tip').className='tip';
   document.getElementById('q-nxt').className='nxt';
+  startTimer();
   var correct=q[6];
   var options=shuffle([correct,q[7],q[8],q[9]].filter(Boolean));
   var box=document.getElementById('q-choices'); box.innerHTML='';
@@ -871,14 +1069,24 @@ function renderQ(){
 function answer(chosen,correct,q){
   if(answered) return;
   answered=true;
+  clearInterval(timerInterval);
   var right=chosen===correct;
-  if(right){qs.correct++;qs.streak++;if(qs.streak>qs.best)qs.best=qs.streak;}
-  else{qs.streak=0;}
+  var xpEarned=calcXP(right,timerLeft);
+  sessionXP+=xpEarned;
+  if(right){
+    qs.correct++;qs.streak++;if(qs.streak>qs.best)qs.best=qs.streak;
+    sessionStreak++;
+    if(sessionStreak===3) showCombo('3 IN A ROW!');
+    else if(sessionStreak===5) showCombo('ON FIRE! x5');
+    else if(sessionStreak>=10) showCombo('UNSTOPPABLE!');
+  } else {
+    qs.streak=0; sessionStreak=0;
+  }
   document.getElementById('q-sl').textContent=qs.correct+' correct';
   var btns=document.getElementById('q-choices').querySelectorAll('.choice');
   btns.forEach(function(b){
     b.disabled=true;
-    if(b.textContent===correct) b.className='choice correct';
+    if(b.textContent===correct){ b.className='choice correct'; if(right&&b.textContent===chosen&&xpEarned>0) b.textContent=correct+' +'+xpEarned+' XP'; }
     else if(b.textContent===chosen&&!right) b.className='choice wrong';
     else b.className='choice dim';
   });
@@ -924,12 +1132,19 @@ async function finishQuiz(){
   document.getElementById('r-str').textContent=qs.best;
   show('s-results');
   var na=(user.total_answered||0)+tot,nc=(user.total_correct||0)+cor,nb=Math.max(user.best_streak||0,qs.best);
-  await sb('dm_users?id=eq.'+user.id,'PATCH',{total_answered:na,total_correct:nc,best_streak:nb});
+  var oldXP=user.xp||0;
+  var newXP=oldXP+sessionXP;
+  var newLevel=getLevelInfo(newXP).cur.l;
+  var newBadges=checkBadges(false,true);
+  var allBadges=(user.badges||[]).concat(newBadges.filter(function(b){return !(user.badges||[]).includes(b);}));
+  await sb('dm_users?id=eq.'+user.id,'PATCH',{total_answered:na,total_correct:nc,best_streak:nb,xp:newXP,level:newLevel,badges:allBadges});
   await sb('dm_sessions','POST',{user_id:user.id,total_questions:tot,total_correct:cor,best_streak:qs.best,mode:qs.mode,position:qs.pos||user.position});
-  user.total_answered=na;user.total_correct=nc;user.best_streak=nb;
+  checkLevelUp(oldXP,newXP);
+  user.total_answered=na;user.total_correct=nc;user.best_streak=nb;user.xp=newXP;user.level=newLevel;user.badges=allBadges;
+  sessionXP=0;
 }
 
-function exitQuiz(){ if(confirm('Exit? Progress will be lost.')) goHome(); }
+function exitQuiz(){ if(confirm('Exit? Progress will be lost.')){clearInterval(timerInterval);goHome();} }
 function replayQuiz(){ launch(qs.mode,qs.pos); }
 function goHome(){ loadHome(); }
 
@@ -942,6 +1157,7 @@ async function goProfile(){
   document.getElementById('p-tot').textContent=tot;
   document.getElementById('p-pct').textContent=tot>0?Math.round(cor/tot*100)+'%':'—';
   document.getElementById('p-str').textContent=user.best_streak||0;
+  renderBadges(user.badges||[]);
   var sessions=await sb('dm_sessions?user_id=eq.'+user.id+'&order=created_at.desc&limit=10&select=*','GET');
   var h=document.getElementById('p-hist'); h.innerHTML='';
   if(!sessions||!sessions.length){h.innerHTML='<div style="color:#7a9fbf;font-size:13px;padding:12px 0">No sessions yet. Start training!</div>';return;}
@@ -961,5 +1177,14 @@ async function goProfile(){
   else localStorage.removeItem('dm_uid');
 })();
 </script>
+
+<div class="lvlup" id="lvlup">
+  <div style="font-size:56px;margin-bottom:12px">🏆</div>
+  <div class="lvlup-title">LEVEL UP!</div>
+  <div style="font-size:14px;color:#7a9fbf;margin-bottom:4px">You reached</div>
+  <div class="lvlup-rank" id="lvlup-rank">Pro</div>
+  <button class="lvlup-btn" onclick="document.getElementById('lvlup').classList.remove('show')">Keep Playing</button>
+</div>
+<div class="combo-pop" id="combo-pop">NICE!</div>
 </body>
 </html>

@@ -835,6 +835,7 @@ function launchChosen(){if(!chosenPos){alert('Pick a position first.');return;}l
 
 
 
+function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1)),t=a[i];a[i]=a[j];a[j]=t;}return a;}
 function launch(mode,pos){
   var pool;
   if(mode==='my-pos')pool=QB.filter(function(q){return q[5]===user.position;});

@@ -26,7 +26,7 @@ html,body{height:100%;overflow:hidden}
 body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;display:flex;flex-direction:column}
 
 /* ─── SCREENS ─── */
-.screen{display:none !important;flex-direction:column;height:100%;overflow:hidden}
+.screen{display:none !important;position:fixed;top:0;left:0;right:0;bottom:0;flex-direction:column;overflow:hidden;background:var(--ink)}
 .screen.active{display:flex !important}
 
 /* ─── HEADER ─── */
@@ -90,7 +90,7 @@ body{background:var(--ink);color:var(--white);font-family:'Barlow',sans-serif;di
 .prog-bar-bg{height:4px;background:var(--ink4);border-radius:2px;overflow:hidden}
 .prog-bar-fill{height:100%;background:var(--gold);border-radius:2px;transition:width .3s}
 .prog-meta{display:flex;justify-content:space-between;margin-top:6px;font-size:11px;color:var(--ice2);font-family:'Barlow Condensed',sans-serif;letter-spacing:.05em}
-.quiz-body{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
+.quiz-.quiz-body-fix{flex:1;overflow-y:auto;padding:16px;-webkit-overflow-scrolling:touch}
 .situation-card{background:var(--ink2);border:1px solid rgba(255,255,255,0.07);border-radius:12px;padding:14px;margin-bottom:14px}
 .sit-badges{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
 .sit-badge{font-size:11px;font-family:'Barlow Condensed',sans-serif;font-weight:600;letter-spacing:.05em;padding:3px 10px;border-radius:20px}

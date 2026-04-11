@@ -1214,32 +1214,28 @@ var quizState = {
 
 // ── SUPABASE HELPERS ──
 async function sbFetch(path, method, body) {
+  var url = 'https://hcadlkmejdekhbgfvyaq.supabase.co/rest/v1/' + path;
+  var key = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhjYWRsa21lamRla2hiZ2Z2eWFxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI4OTg1MjIsImV4cCI6MjA4ODQ3NDUyMn0.PlHlQX5b5ts7SnXd7hWfuWi01Y_aK6QnWvzZPVb54Ko';
   var opts = {
     method: method || 'GET',
     headers: {
-      'apikey': SUPABASE_ANON,
-      'Authorization': 'Bearer ' + SUPABASE_ANON,
+      'apikey': key,
+      'Authorization': 'Bearer ' + key,
       'Content-Type': 'application/json',
       'Prefer': 'return=representation'
     }
   };
   if (body) opts.body = JSON.stringify(body);
   try {
-    var res = await fetch(SUPABASE_URL + '/rest/v1/' + path, opts);
-    if (!res.ok) {
-      var t = await res.text();
-      console.error('sbFetch error', res.status, t);
-      return null;
-    }
-    var ct = res.headers.get('content-type') || '';
-    if (ct.includes('json')) return res.json();
-    return null;
+    var res = await fetch(url, opts);
+    var text = await res.text();
+    if (!res.ok) { console.error('API error', res.status, text); return null; }
+    try { return JSON.parse(text); } catch(e) { return null; }
   } catch(e) {
-    console.error('sbFetch fail', e);
+    console.error('Fetch failed', e.message);
     return null;
   }
 }
-
 // ── AUTH ──
 function switchTab(tab) {
   var isLogin = tab === 'login';
@@ -1260,14 +1256,15 @@ async function doLogin() {
   var user = document.getElementById('login-user').value.trim().toLowerCase();
   var pin = document.getElementById('login-pin').value.trim();
   var errEl = document.getElementById('login-err');
-  errEl.textContent = '';
+  errEl.textContent = 'Checking... user=' + user + ' pin=' + pin.length + 'digits';
   if (!user) { errEl.textContent = 'Enter your username.'; return; }
-  if (pin.length !== 4) { errEl.textContent = 'PIN must be 4 digits.'; return; }
-  errEl.textContent = 'Signing in...';
+  if (pin.length !== 4) { errEl.textContent = 'PIN must be 4 digits. You entered: ' + pin.length; return; }
+  errEl.textContent = 'Connecting to server...';
   var rows = await sbFetch('dm_users?username=eq.' + encodeURIComponent(user) + '&select=*', 'GET');
-  if (rows === null) { errEl.textContent = 'Connection error — try again.'; return; }
-  if (!rows.length) { errEl.textContent = 'Username "' + user + '" not found.'; return; }
-  if (rows[0].pin !== pin) { errEl.textContent = 'Wrong PIN. Try again.'; return; }
+  errEl.textContent = 'Server said: ' + JSON.stringify(rows).slice(0,80);
+  if (rows === null) { errEl.textContent = 'Connection failed — no response from server.'; return; }
+  if (!rows.length) { errEl.textContent = 'No user found for: ' + user; return; }
+  if (rows[0].pin !== pin) { errEl.textContent = 'Wrong PIN. DB has: ' + rows[0].pin + ' You entered: ' + pin; return; }
   errEl.textContent = '';
   currentUser = rows[0];
   localStorage.setItem('dm_user_id', currentUser.id);
